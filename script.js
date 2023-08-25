@@ -68,7 +68,10 @@ function gameLoop() {
 
     // Clear lines and update score
     clearLines();
-
+    function updateScoreboard () {
+        document.getElementById("score").textContent = score;
+        document.getElementById("lines").textContent = lines;
+    }
     // Draw the updated state
     draw();
   
