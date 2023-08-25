@@ -258,10 +258,52 @@ class Game {
             });
         });
     }
+
+    togglePause() {
+        this.isPaused = !this.isPaused;
+        if (!this.isPaused) {
+            this.gameLoop();
+        }
+        document.getElementById("start-pause").textContent = this.isPaused ? "Resume" : "Pause";
+    }
+
+    gameLoop() {
+        if (this.isGameOver || this.isPaused) return;
+    
+        // Move the Tetrimino down by one square
+        currentTetrimino.y++;
+  
+        // Collision detection and other game logic go here...
+        if(checkCollision(currentTetrimino, gameBoard)) {
+        
+            // Revert the move
+            currentTetrimino.y--;
+    
+            // Lock the Tetrimino and generate a new one
+            lockTetrimino();
+            if (checkCollision(currentTetrimino, gameBoard)) {
+                isGameOver = true;
+                alert("Game Over!");
+            }
+            currentTetrimino = generateRandomTetrimino();
+        }
+
+        // Clear lines and update score
+        clearLines();
+
+        updateScoreboard();
+
+        // Draw the updated state
+        draw();
+
+        setTimeout(() => this.gameLoop(), 500 - (this.level * 50));
+    }
 }
 
 // ... Initialization code ...
 // game.drawNextTetrimino(); // Draw the next Tetrimino when appropriate
+
+document.getElementById("start-pause").addEventListener("click", () => game.togglePause());
 
 const game = new Game();
 // Initialize, set up listeners, etc
