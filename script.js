@@ -55,8 +55,12 @@ function gameLoop() {
     if(checkCollision(currentTetrimino, gameBoard)) {
         // Revert the move
         currentTetrimino.y--;
-        //Lock the Tetrimino and generate a new one
+        // Lock the Tetrimino and generate a new one
         lockTetrimino();
+        if (checkCollision(currentTetrimino, gameBoard)) {
+            isGameOver = true;
+            alert("Game Over!");
+        }
         currentTetrimino = generateRandomTetrimino();
     }
 
