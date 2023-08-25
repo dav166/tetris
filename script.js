@@ -33,15 +33,35 @@ const tetriminoShapes = {
       [0, 0, 1],
       [1, 1, 1]
     ]
-  };
+};
   
-  function generateRandomTetrimino() {
+function generateRandomTetrimino() {
     const keys = Object.keys(tetriminoShapes);
     const randomKey = keys[Math.floor(Math.random() * keys.length)];
     return {
-      shape: tetriminoShapes[randomKey],
-      x: 5, // Start in the middle of the game board
-      y: 0  // Start at the top of the game board
+        shape: tetriminoShapes[randomKey],
+        x: 5, // Start in the middle of the game board
+        y: 0  // Start at the top of the game board
     };
+}
+
+function gameLoop() {
+    if (isGameOver) return;
+  
+    // Move the Tetrimino down by one square
+    currentTetrimino.y++;
+  
+    // Collision detection and other game logic go here...
+  
+    // Draw the game board and Tetrimino
+    draw();
+  
+    // Run the game loop again after a delay
+    setTimeout(gameLoop, 500 - (level * 50));
   }
+  
+  // To start the game
+  currentTetrimino = generateRandomTetrimino();
+  gameLoop();
+
   
