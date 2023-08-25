@@ -49,3 +49,11 @@ button:hover {
 #score, #lines, #level {
   margin: 5px;
 }
+
+.filled {
+  background: #ccc;
+}
+  
+.empty {
+  background: #000;
+}
