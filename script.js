@@ -45,8 +45,10 @@ function generateRandomTetrimino() {
     };
 }
 
+let isPaused = false;
+
 function gameLoop() {
-    if (isGameOver) return;
+    if (isGameOver || isPaused) return;
   
     // Move the Tetrimino down by one square
     currentTetrimino.y++;
@@ -129,6 +131,10 @@ document.addEventListener("keydown", function(event) {
             break;
         case 38: // Up arrow key
             rotateTetrimino();
+            break;
+        case 80: // 'P' key
+            isPaused = !isPaused;
+            if (!isPaused) gameLoop(); // Resume game loop if unpaused
             break;
     }
 });
