@@ -13,7 +13,26 @@ const tetriminoShapes = {
     'I': [
       [1, 1, 1, 1]
     ],
-    // Add other shapes like T, S, Z, J, L
+    'T': [
+      [0, 1, 0],
+      [1, 1, 1]
+    ],
+    'S': [
+      [0, 1, 1],
+      [1, 1, 0]
+    ],
+    'Z': [
+      [1, 1, 0],
+      [0, 1, 1]
+      ],
+    'J': [
+      [1, 0, 0],
+      [1, 1, 1]
+    ],
+    'L': [
+      [0, 0, 1],
+      [1, 1, 1]
+    ]
   };
   
   function generateRandomTetrimino() {
