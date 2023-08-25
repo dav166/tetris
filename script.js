@@ -199,6 +199,8 @@ function createEmptyBoard() {
     return Array.from({ length: 20 }, () => Array(10).fill(0));
 }
 
+// // //
+
 class Tetrimino {
     constructor(shape) {
         this.shape = shape;
@@ -234,8 +236,32 @@ class Game {
         return new Tetrimino(shapes[randomKey]);
     }
 
+    drawNextTetrimino() {
+        const nextTetriminoElement = document.getElementById("next-tetrimino");
+        nextTetriminoElement.innerHTML = "";
 
+        for (let y = 0; y < 4; y++) {
+            for (let x = 0; x < 4; x++) {
+                const cell = document.createElement("div");
+                cell.classList.add("empty");
+                nextTetriminoElement.appendChild(cell);
+            }
+        }
+
+        this.nextTetrimino.shape.forEach((row, y) => {
+            row.forEach((value, x) => {
+                if (value) {
+                    const index = 4 * y + x;
+                    nextTetriminoElement.childNodes[index].classList.remove("empty");
+                    nextTetriminoElement.childNodes[index].classList.add("filled");
+                }
+            });
+        });
+    }
 }
+
+// ... Initialization code ...
+// game.drawNextTetrimino(); // Draw the next Tetrimino when appropriate
 
 const game = new Game();
 // Initialize, set up listeners, etc
