@@ -112,3 +112,42 @@ function clearLines() {
     }
   }
   
+document.addEventListener("keydown", function(event) {
+    switch(event.keyCode) {
+        case 37: // Left arrow key
+            moveTetrimino(-1, 0);
+            break;
+        case 39: // Right arrow key
+            moveTetrimino(-1, 0);
+            break;
+        case 40: // Down arrow key
+            moveTetrimino(0, 1);
+            break;
+        case 38: // Up arrow key
+            rotateTetrimino();
+            break;
+    }
+});
+
+function moveTetrimino(dx, dy) {
+    currentTetrimino.x += dx;
+    currentTetrimino.y += dy;
+
+    if (checkCollision(currentTetrimino, gameBoard)) {
+        // Revert the move
+        currentTetrimino.x -= dx;
+        currentTetrimino.y -= dy;
+    }
+}
+
+function rotateTetrimino() {
+    const originalShape = currentTetrimino.shape;
+
+    // Rotate the Tetrimino 
+    currentTetrimino.shape = rotateShape(currentTetrimino.shape);
+
+    if (checkCollision(currentTetrimino, gameBoard)) {
+        // Revert the rotation
+        currentTetrimino.shape = originalShape;
+    }
+}
