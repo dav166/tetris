@@ -108,20 +108,24 @@ function checkCollision(tetrimino, board) {
   
 function clearLines() {
     for (let y = 19; y >= 0; ) {
+        let cleared = false
         if (gameBoard[y].every(cell => cell !== 0)) {
             gameBoard.splice(y, 1);
             gameBoard.unshift(Array(10).fill(0));
             lines++;
             score += 10;
+            cleared = true
         } else {
             y--;
         }
         if (lines % 10 === 0) {
             level++;
         }
-        updateScoreboard();
+        if (cleared) {
+            updateScoreboard();
+        }
     }
-  }
+}
   
 document.addEventListener("keydown", function(event) {
     switch(event.keyCode) {
@@ -129,7 +133,7 @@ document.addEventListener("keydown", function(event) {
             moveTetrimino(-1, 0);
             break;
         case 39: // Right arrow key
-            moveTetrimino(-1, 0);
+            moveTetrimino(1, 0);
             break;
         case 40: // Down arrow key
             moveTetrimino(0, 1);
@@ -186,7 +190,52 @@ function rotateShape(matrix) {
 }
 
 function updateScoreboard () {
-    document.getElementById("score").textContent = score;
-    document.getElementById("lines").textContent = lines;
-    document.getElementById("level").textContent = level;
+    document.getElementById("score-value").textContent = score;
+    document.getElementById("lines-value").textContent = lines;
+    document.getElementById("level-value").textContent = level;
 }
+
+function createEmptyBoard() {
+    return Array.from({ length: 20 }, () => Array(10).fill(0));
+}
+
+class Tetrimino {
+    constructor(shape) {
+        this.shape = shape;
+        this.x = 5;
+        this.y = 0;
+    }
+}
+
+class Game {
+    constructor() {
+        this.board = Array.from({ length: 20 }, () => Array(10).fill(0));
+        this.score = 0;
+        this.lines = 0;
+        this.level = 1;
+        this.isGameOver = false;
+        this.isPaused = false;
+        this.currentTetrimino = this.randomTetrimino();
+        this.nextTetrimino = this.randomTetrimino();
+    }
+
+    randomTetrimino() {
+        const shapes = {
+            'O': [[1, 1], [1, 1]],
+            'I': [[1, 1, 1, 1]],
+            'T': [[0, 1, 0],[1, 1, 1]],
+            'S': [[0, 1, 1],[1, 1, 0]],
+            'Z': [[1, 1, 0],[0, 1, 1]],
+            'J': [[1, 0, 0],[1, 1, 1]],
+            'L': [[0, 0, 1],[1, 1, 1]]
+        };
+        const keys = Object.keys(shapes);
+        const randomKey = keys[Math.floor(Math.random() * keys.length)];
+        return new Tetrimino(shapes[randomKey]);
+    }
+
+
+}
+
+const game = new Game();
+// Initialize, set up listeners, etc
