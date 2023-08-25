@@ -298,12 +298,17 @@ class Game {
 
         setTimeout(() => this.gameLoop(), 500 - (this.level * 50));
     }
+
+    showGameOver() {
+        this.isGameOver = true;
+        document.getElementById("game-over").style.display = "none";
+    }
 }
 
 // ... Initialization code ...
 // game.drawNextTetrimino(); // Draw the next Tetrimino when appropriate
 
 document.getElementById("start-pause").addEventListener("click", () => game.togglePause());
-
+document.getElementById("restart").addEventListener("click", () => game.restart());
 const game = new Game();
 // Initialize, set up listeners, etc
