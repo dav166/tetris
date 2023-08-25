@@ -151,3 +151,11 @@ function rotateTetrimino() {
         currentTetrimino.shape = originalShape;
     }
 }
+
+function rotateShape(matrix) {
+    const N = matrix.length - 1;
+    let result = matrix.map((row, i) =>
+        row.map((val, j) => matrix[N - j][i])
+    );
+    return result;
+}
