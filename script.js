@@ -52,19 +52,29 @@ function gameLoop() {
     currentTetrimino.y++;
   
     // Collision detection and other game logic go here...
-  
-    // Draw the game board and Tetrimino
+    if(checkCollision(currentTetrimino, gameBoard)) {
+        // Revert the move
+        currentTetrimino.y--;
+        //Lock the Tetrimino and generate a new one
+        lockTetrimino();
+        currentTetrimino = generateRandomTetrimino();
+    }
+
+    // Clear lines and update score
+    clearLines();
+
+    // Draw the updated state
     draw();
   
     // Run the game loop again after a delay
     setTimeout(gameLoop, 500 - (level * 50));
-  }
+}
   
-  // To start the game
-  currentTetrimino = generateRandomTetrimino();
-  gameLoop();
+// To start the game
+currentTetrimino = generateRandomTetrimino();
+gameLoop();
 
-  function draw() {
+function draw() {
     const gameBoardElement = document.getElementById("game-board");
     gameBoardElement.innerHTML = "";
     
@@ -74,6 +84,31 @@ function gameLoop() {
         cell.classList.add(gameBoard[y][x] ? "filled" : "empty");
         gameBoardElement.appendChild(cell);
       }
+    }
+}
+
+function checkCollision(tetrimino, board) {
+    for (let y = 0; y < tetrimino.shape.length; y++) {
+        for (let x = 0; x < tetrimino.shape[y].length; x++) {
+            if (tetrimino.shape[y][x] &&
+                (board[y + tetrimino.y] && board[y + tetrimino.y][x + tetrimino.x]) !== 0) {
+            return true;
+            }
+        }
+    }
+    return false;
+}
+  
+function clearLines() {
+    for (let y = 19; y >= 0; ) {
+        if (gameBoard[y].every(cell => cell !== 0)) {
+            gameBoard.splice(y, 1);
+            gameBoard.unshift(Array(10).fill(0));
+            lines++;
+            score += 10;
+        } else {
+            y--;
+        }
     }
   }
   
