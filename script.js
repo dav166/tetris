@@ -3,7 +3,8 @@ let currentTetrimino = null;
 let isGameOver = false;
 let score = 0;
 let lines = 0;
-let level = 0;
+let level = 1;
+let isPaused = false;
 
 const tetriminoShapes = {
     'O': [
@@ -45,8 +46,6 @@ function generateRandomTetrimino() {
     };
 }
 
-let isPaused = false;
-
 function gameLoop() {
     if (isGameOver || isPaused) return;
   
@@ -68,10 +67,9 @@ function gameLoop() {
 
     // Clear lines and update score
     clearLines();
-    function updateScoreboard () {
-        document.getElementById("score").textContent = score;
-        document.getElementById("lines").textContent = lines;
-    }
+
+    updateScoreboard();
+
     // Draw the updated state
     draw();
   
@@ -118,6 +116,10 @@ function clearLines() {
         } else {
             y--;
         }
+        if (lines % 10 === 0) {
+            level++;
+        }
+        updateScoreboard();
     }
   }
   
@@ -141,6 +143,16 @@ document.addEventListener("keydown", function(event) {
             break;
     }
 });
+
+document.getElementById("restart-button").addEventListener("click", function() {
+    isGameOver = false;
+    gameBoard = createEmptyBoard(); 
+    score = 0;
+    lines = 0;
+    level = 1;
+    updateScoreboard();
+    gameLoop();
+})
 
 function moveTetrimino(dx, dy) {
     currentTetrimino.x += dx;
@@ -171,4 +183,10 @@ function rotateShape(matrix) {
         row.map((val, j) => matrix[N - j][i])
     );
     return result;
+}
+
+function updateScoreboard () {
+    document.getElementById("score").textContent = score;
+    document.getElementById("lines").textContent = lines;
+    document.getElementById("level").textContent = level;
 }
