@@ -90,12 +90,80 @@ class Game {
 
         // Clear lines and update score
         this.clearLines();
-        // Update the scoreboard
-        this.updateScoreboard();
         // Draw the updated state
         this.draw();
+        // Update the scoreboard
+        this.updateScoreboard();
 
         setTimeout(() => this.gameLoop(), 500 - (this.level * 50));
+    }
+
+    checkCollision() {
+        for (let y = 0; y < this.currentTetrimino.shape.length; y++) {
+            for (let x = 0; x < this.currentTetrimino.shape[y].length; x++) {
+                if (this.currentTetrimino.shape[y][x] &&
+                    (this.board[y + this.currentTetrimino.y] && this.board[y + this.currentTetrimino.y][x + this.currentTetrimino.x]) !== 0) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
+    lockTetrimino() {
+        this.currentTetrimino.shape.forEach((row, y) => {
+            row.forEach((value, x) => {
+                if (value) {
+                    this.board[y + this.currentTetrimino.y][x + this.currentTetrimino.x] = value;
+                }
+            });
+        });
+    }
+
+    clearLines() {
+        for (let y = 19; y >= 0; ) {
+            if (this.board[y].every(cell => cell !== 0)) {
+                this.board.splice(y, 1);
+                this.board.unshift(Array(10).fill(0));
+                this.lines++;
+                this.score += 10;
+            } else {
+                y--;
+            }
+        }
+        if (this.lines % 10 === 0) {
+            this.level++;
+        }
+    }
+
+    draw() {
+        const gameBoardElement = document.getElementById("game-board");
+        gameBoardElement.innerHTML = "";
+        for (let y = 0; y < 20; y++) {
+            for (let x = 0; x < 10; x++) {
+                const cell = document.createElement("div");
+                cell.classList.add(this.board[y][x] ? "filled" : "empty");
+                gameBoardElement.appendChild(cell);
+            }
+        }
+    }
+
+    updateScoreboard() {
+        document.getElementById("score-value").textContent = this.score;
+        document.getElementById("lines-value").textContent = this.lines;
+        document.getElementById("level-value").textContent = this.level;
+    }
+
+    restart() {
+        this.board = Array.from({ length: 20 }, () => Array(10).fill(0));
+        this.score = 0;
+        this.lines = 0;
+        this.level = 1;
+        this.isGameOver = false;
+        this.currentTetrimino = this.randomTetrimino();
+        this.nextTetrimino = this.randomTetrimino();
+        this.updateScoreboard();
+        this.gameLoop();
     }
 
     showGameOver() {
@@ -110,10 +178,10 @@ game.drawNextTetrimino(); // Draw next Tetrimino when appropriate
 
 // Key mapping
 const keyMap = {
-    37: 'moveLeft'
-    39: 'moveRight'
-    40: 'moveDown'
-    38: 'rotate'
+    37: 'moveLeft',
+    39: 'moveRight',
+    40: 'moveDown',
+    38: 'rotate',
     80: 'togglePause'
 };
 
@@ -126,3 +194,6 @@ document.addEventListener("keydown", function(event) {
 
 document.getElementById("start-pause").addEventListener("click", () => game.togglePause());
 document.getElementById("restart").addEventListener("click", () => game.restart());
+
+// Kick off the game loop
+game.gameLoop();
