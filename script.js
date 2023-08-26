@@ -142,10 +142,64 @@ class Game {
         for (let y = 0; y < 20; y++) {
             for (let x = 0; x < 10; x++) {
                 const cell = document.createElement("div");
-                cell.classList.add(this.board[y][x] ? "filled" : "empty");
+                if (y >= this.currentTetrimino.y && x >= this.currentTetrimino.x &&
+                    y < this.currentTetrimino.y + this.currentTetrimino.shape.length &&
+                    x < this.currentTetrimino.x + this.currentTetrimino.shape[0].length &&
+                    this.currentTetrimino.shape[y - this.currentTetrimino.y][x - this.currentTetrimino.x]) {
+                    cell.classList.add("filled");    
+                } else {
+                    cell.classList.add(this.board[y][x] ? "filled" : "empty");
+                }
                 gameBoardElement.appendChild(cell);
             }
         }
+    }
+
+    moveLeft() {
+        this.currentTetrimino.x--;
+        if (this.checkCollision()) {
+            this.currentTetrimino.x++;
+        }
+        this.draw();
+    }
+
+    moveRight() {
+        this.currentTetrimino.x++;
+        if (this.checkCollision()) {
+            this.currentTetrimino.x--;
+        }
+        this.draw();
+    }
+
+    moveDown() {
+        this.currentTetrimino.y++;
+        if (this.checkCollision()) {
+            this.currentTetrimino.y--;
+            this.lockTetrimino();
+        }
+        this.draw();
+    }
+
+    rotate() {
+        const newShape = []
+
+        for (let y = 0; y < this.currentTetrimino.shape[0].length; y++) {
+            newShape[y] = [];
+            for (let x = 0; x < this.currentTetrimino.shape.length; x++) {
+                newShape[y][x] = this.currentTetrimino.shape[this.currentTetrimino.shape.length - 1 - x][y];
+            }
+        }
+
+        const currentShape = this.currentTetrimino.shape;
+
+        this.currentTetrimino.shape = newShape;
+
+        if (this.checkCollision()) {
+            this.currentTetrimino.shape = currentShape;
+        }
+
+        this.draw();
+
     }
 
     updateScoreboard() {
@@ -168,7 +222,7 @@ class Game {
 
     showGameOver() {
         this.isGameOver = true;
-        document.getElementById("game-over").style.display = "none";
+        document.getElementById("game-over").style.display = "block";
     }
 }
 
@@ -193,7 +247,7 @@ document.addEventListener("keydown", function(event) {
 });
 
 document.getElementById("start-pause").addEventListener("click", () => game.togglePause());
-document.getElementById("restart").addEventListener("click", () => game.restart());
+document.getElementById("restart-button").addEventListener("click", () => game.restart());
 
 // Kick off the game loop
 game.gameLoop();
