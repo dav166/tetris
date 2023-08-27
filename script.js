@@ -141,9 +141,7 @@ class Tetrimino {
                 y--;
             }
         }
-        if (this.lines > 0 && this.lines % 10 === 0) {
-            this.level++;
-        }
+        this.level = Math.floor(this.lines / 10) + 1;
     }
 
     moveLeft() {
