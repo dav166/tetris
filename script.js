@@ -111,15 +111,23 @@ class Tetrimino {
 
     checkCollision() {
         for (let y = 0; y < this.currentTetrimino.shape.length; y++) {
-            for (let x = 0; x < this.currentTetrimino.shape[y].length; x++) {
-                if (this.currentTetrimino.shape[y][x] &&
-                    (this.board[y + this.currentTetrimino.y] && this.board[y + this.currentTetrimino.y][x + this.currentTetrimino.x]) !== 0) {
-                    return true;
-                }
+          for (let x = 0; x < this.currentTetrimino.shape[y].length; x++) {
+            if (this.currentTetrimino.shape[y][x]) {
+              if (
+                // outside the game bounds
+                this.currentTetrimino.y + y >= this.board.length ||
+                this.currentTetrimino.x + x < 0 ||
+                this.currentTetrimino.x + x >= this.board[0].length ||
+                // collides with another tetrimino
+                this.board[this.currentTetrimino.y + y][this.currentTetrimino.x + x] !== 0
+              ) {
+                return true;
+              }
             }
+          }
         }
         return false;
-    }
+    }      
 
     clearLines() {
         for (let y = 19; y >= 0; ) {
