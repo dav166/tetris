@@ -206,13 +206,14 @@ class Tetrimino {
         this.currentTetrimino = this.randomTetrimino();
         this.nextTetrimino = this.randomTetrimino();
         this.updateScoreboard();
+        document.getElementById("game-over").style.display = "none"; // Hide the game-over screen
         this.gameLoop();
     }
 
     showGameOver() {
         this.isGameOver = true;
-        document.getElementById("game-over").style.display = "block";
-    }
+        document.getElementById("game-over").style.display = "flex";
+}
 
     drawNextTetrimino() {
         const nextTetriminoElement = document.getElementById("next-tetrimino");
@@ -271,4 +272,4 @@ document.getElementById("start-pause").addEventListener("click", () => {
       game.start();
     }
   });
-document.getElementById("restart-button").addEventListener("click", () => game.restart());
+document.getElementById("game-over-restart").addEventListener("click", () => game.restart());
