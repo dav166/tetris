@@ -40,24 +40,24 @@ class Tetrimino {
         const gameBoardElement = document.getElementById("game-board");
         gameBoardElement.innerHTML = "";
         for (let y = 0; y < 20; y++) {
-          for (let x = 0; x < 10; x++) {
-            const cell = document.createElement("div");
-            let cellType = 'empty';
+            for (let x = 0; x < 10; x++) {
+                const cell = document.createElement("div");
+                let cellType = 'empty';
     
-            if (y >= this.currentTetrimino.y && x >= this.currentTetrimino.x &&
-                y < this.currentTetrimino.y + this.currentTetrimino.shape.length &&
-                x < this.currentTetrimino.x + this.currentTetrimino.shape[0].length &&
-                this.currentTetrimino.shape[y - this.currentTetrimino.y][x - this.currentTetrimino.x]) {
-                cellType = this.currentTetrimino.color;
-            } else {
-                cellType = this.board[y][x] ? this.board[y][x] : 'empty';
+                if (y >= this.currentTetrimino.y && x >= this.currentTetrimino.x &&
+                    y < this.currentTetrimino.y + this.currentTetrimino.shape.length &&
+                    x < this.currentTetrimino.x + this.currentTetrimino.shape[0].length &&
+                    this.currentTetrimino.shape[y - this.currentTetrimino.y][x - this.currentTetrimino.x]
+                ) {
+                    cellType = this.currentTetrimino.color;
+                } else {
+                    cellType = this.board[y][x] ? this.board[y][x] : 'empty';
+                }
+                cell.classList.add(cellType);
+                gameBoardElement.appendChild(cell);
             }
-    
-            cell.classList.add(cellType);
-            gameBoardElement.appendChild(cell);
-          }
         }
-      }
+    }
 
     lockTetrimino() {
         this.currentTetrimino.shape.forEach((row, y) => {
@@ -140,7 +140,7 @@ class Tetrimino {
                 y--;
             }
         }
-        if (this.lines % 10 === 0) {
+        if (this.lines > 0 && this.lines % 10 === 0) {
             this.level++;
         }
     }
