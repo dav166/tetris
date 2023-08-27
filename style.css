@@ -53,18 +53,16 @@ button:hover {
 .filled {
     background: #ccc;
 }
-  
+
 .empty {
     background: #000;
 }
 
-#next-tetrimino {
-    width: 100px;
-    height: 100px;
-    border: 2px solid #fff;
-    display: grid;
-    grid-template-columns: repeat(4, 1fr);
-    grid-template-rows: repeat(4, 1fr);
-    margin-top: 10px;
-  }
-  
+/* New styles for Tetriminos */
+.O { background: yellow; }
+.I { background: cyan; }
+.T { background: purple; }
+.S { background: green; }
+.Z { background: red; }
+.J { background: blue; }
+.L { background: orange; }

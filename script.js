@@ -1,14 +1,14 @@
 
 class Tetrimino {
-    constructor(shape) {
-        this.shape = shape;
-        this.x = 5;
-        this.y = 0;
+    constructor(shape, color) {
+      this.shape = shape;
+      this.color = color;
+      this.x = 5;
+      this.y = 0;
     }
-}
-
-class Game {
-
+  }
+  
+  class Game {
     constructor() {
         this.board = Array.from({ length: 20 }, () => Array(10).fill(0));
         this.score = 0;
@@ -18,41 +18,52 @@ class Game {
         this.isPaused = false;
         this.currentTetrimino = this.randomTetrimino();
         this.nextTetrimino = this.randomTetrimino();
+        this.drawNextTetrimino();
     }
 
     randomTetrimino() {
-        const shapes = {
-            'O': [[1, 1], [1, 1]],
-            'I': [[1, 1, 1, 1]],
-            'T': [[0, 1, 0],[1, 1, 1]],
-            'S': [[0, 1, 1],[1, 1, 0]],
-            'Z': [[1, 1, 0],[0, 1, 1]],
-            'J': [[1, 0, 0],[1, 1, 1]],
-            'L': [[0, 0, 1],[1, 1, 1]]
-        };
-        const keys = Object.keys(shapes);
-        const randomKey = keys[Math.floor(Math.random() * keys.length)];
-        return new Tetrimino(shapes[randomKey]);
+        const tetriminos = [
+          { shape: [[1, 1], [1, 1]], color: 'O' },
+          { shape: [[1, 1, 1, 1]], color: 'I' },
+          { shape: [[0, 1, 0], [1, 1, 1]], color: 'T' },
+          { shape: [[0, 1, 1], [1, 1, 0]], color: 'S' },
+          { shape: [[1, 1, 0], [0, 1, 1]], color: 'Z' },
+          { shape: [[1, 0, 0], [1, 1, 1]], color: 'J' },
+          { shape: [[0, 0, 1], [1, 1, 1]], color: 'L' }
+        ];
+        const randomIndex = Math.floor(Math.random() * tetriminos.length);
+        const { shape, color } = tetriminos[randomIndex];
+        return new Tetrimino(shape, color);
     }
 
-    drawNextTetrimino() {
-        const nextTetriminoElement = document.getElementById("next-tetrimino");
-        nextTetriminoElement.innerHTML = "";
-
-        for (let y = 0; y < 4; y++) {
-            for (let x = 0; x < 4; x++) {
-                const cell = document.createElement("div");
-                cell.classList.add("empty");
-                nextTetriminoElement.appendChild(cell);
+    draw() {
+        const gameBoardElement = document.getElementById("game-board");
+        gameBoardElement.innerHTML = "";
+        for (let y = 0; y < 20; y++) {
+          for (let x = 0; x < 10; x++) {
+            const cell = document.createElement("div");
+            let cellType = 'empty';
+    
+            if (y >= this.currentTetrimino.y && x >= this.currentTetrimino.x &&
+                y < this.currentTetrimino.y + this.currentTetrimino.shape.length &&
+                x < this.currentTetrimino.x + this.currentTetrimino.shape[0].length &&
+                this.currentTetrimino.shape[y - this.currentTetrimino.y][x - this.currentTetrimino.x]) {
+                cellType = this.currentTetrimino.color;
+            } else {
+                cellType = this.board[y][x] ? this.board[y][x] : 'empty';
             }
+    
+            cell.classList.add(cellType);
+            gameBoardElement.appendChild(cell);
+          }
         }
+      }
 
-        this.nextTetrimino.shape.forEach((row, y) => {
+    lockTetrimino() {
+        this.currentTetrimino.shape.forEach((row, y) => {
             row.forEach((value, x) => {
                 if (value) {
-                    const index = 4 * y + x;
-                    nextTetriminoElement.childNodes[index].classList.remove("empty");
-                    nextTetriminoElement.childNodes[index].classList.add("filled");
+                    this.board[y + this.currentTetrimino.y][x + this.currentTetrimino.x] = this.currentTetrimino.color;
                 }
             });
         });
@@ -110,16 +121,6 @@ class Game {
         return false;
     }
 
-    lockTetrimino() {
-        this.currentTetrimino.shape.forEach((row, y) => {
-            row.forEach((value, x) => {
-                if (value) {
-                    this.board[y + this.currentTetrimino.y][x + this.currentTetrimino.x] = value;
-                }
-            });
-        });
-    }
-
     clearLines() {
         for (let y = 19; y >= 0; ) {
             if (this.board[y].every(cell => cell !== 0)) {
@@ -133,25 +134,6 @@ class Game {
         }
         if (this.lines % 10 === 0) {
             this.level++;
-        }
-    }
-
-    draw() {
-        const gameBoardElement = document.getElementById("game-board");
-        gameBoardElement.innerHTML = "";
-        for (let y = 0; y < 20; y++) {
-            for (let x = 0; x < 10; x++) {
-                const cell = document.createElement("div");
-                if (y >= this.currentTetrimino.y && x >= this.currentTetrimino.x &&
-                    y < this.currentTetrimino.y + this.currentTetrimino.shape.length &&
-                    x < this.currentTetrimino.x + this.currentTetrimino.shape[0].length &&
-                    this.currentTetrimino.shape[y - this.currentTetrimino.y][x - this.currentTetrimino.x]) {
-                    cell.classList.add("filled");    
-                } else {
-                    cell.classList.add(this.board[y][x] ? "filled" : "empty");
-                }
-                gameBoardElement.appendChild(cell);
-            }
         }
     }
 
@@ -224,11 +206,40 @@ class Game {
         this.isGameOver = true;
         document.getElementById("game-over").style.display = "block";
     }
+
+    drawNextTetrimino() {
+        const nextTetriminoElement = document.getElementById("next-tetrimino");
+        nextTetriminoElement.innerHTML = "";
+  
+        for (let y = 0; y < 4; y++) {
+            for (let x = 0; x < 4; x++) {
+                const cell = document.createElement("div");
+                cell.classList.add("empty");
+                nextTetriminoElement.appendChild(cell);
+            }
+        }
+  
+        this.nextTetrimino.shape.forEach((row, y) => {
+            row.forEach((value, x) => {
+                if (value) {
+                    const index = 4 * y + x;
+                    nextTetriminoElement.childNodes[index].classList.remove("empty");
+                    nextTetriminoElement.childNodes[index].classList.add(this.nextTetrimino.color);
+                }
+            });
+        });
+    }
+
+    start() {
+        this.draw();
+        this.updateScoreboard();
+        this.gameLoop();
+    }
 }
 
 // ... Initialization code ...
 const game = new Game();
-game.drawNextTetrimino(); // Draw next Tetrimino when appropriate
+game.drawNextTetrimino();
 
 // Key mapping
 const keyMap = {
@@ -246,8 +257,11 @@ document.addEventListener("keydown", function(event) {
     }
 });
 
-document.getElementById("start-pause").addEventListener("click", () => game.togglePause());
+document.getElementById("start-pause").addEventListener("click", () => {
+    if (game.isPaused) {
+      game.togglePause();
+    } else {
+      game.start();
+    }
+  });
 document.getElementById("restart-button").addEventListener("click", () => game.restart());
-
-// Kick off the game loop
-game.gameLoop();
