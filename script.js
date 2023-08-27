@@ -18,6 +18,10 @@ class Tetrimino {
         this.isPaused = false;
         this.currentTetrimino = this.randomTetrimino();
         this.nextTetrimino = this.randomTetrimino();
+        this.init();
+    }
+
+    init() {
         this.drawNextTetrimino();
     }
 
@@ -247,7 +251,6 @@ class Tetrimino {
 
 // ... Initialization code ...
 const game = new Game();
-game.drawNextTetrimino();
 
 // Key mapping
 const keyMap = {
