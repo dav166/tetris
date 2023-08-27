@@ -106,7 +106,8 @@ class Tetrimino {
         // Update the scoreboard
         this.updateScoreboard();
 
-        setTimeout(() => this.gameLoop(), 500 - (this.level * 50));
+        const speed = Math.max(50, 500 - (this.level * 50));
+        setTimeout(() => this.gameLoop(), speed);
     }
 
     checkCollision() {
