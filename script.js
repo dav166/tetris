@@ -6,7 +6,7 @@ class Tetrimino {
       this.x = 5;
       this.y = 0;
     }
-  }
+}
   
   class Game {
     constructor() {
@@ -43,11 +43,23 @@ class Tetrimino {
     draw() {
         const gameBoardElement = document.getElementById("game-board");
         gameBoardElement.innerHTML = "";
-        this.currentTetrimino.blocks.forEach(block => {
+    
+        // Draw the static blocks on the board
+        for (let y = 0; y < this.board.length; y++) {
+            for (let x = 0; x < this.board[y].length; x++) {
+                const cell = document.createElement("div");
+                cell.className = this.board[y][x] ? this.board[y][x] : 'empty';
+                gameBoardElement.appendChild(cell);
+            }
+        }
+    
+        // Draw the current Tetrimino
+        this.currentTetrimino.blocks.forEach((block) => {
             const x = block.x + this.currentTetrimino.x;
             const y = block.y + this.currentTetrimino.y;
-            if (y >= 0 && y < 20 && x >= 0 && x < 10) {
-                const index = y * 10 + x;
+            if (y >= 0) {
+                const index = y * 10 + x;  // 10 is the width of the board
+                gameBoardElement.childNodes[index].classList.remove("empty");
                 gameBoardElement.childNodes[index].classList.add(this.currentTetrimino.color);
             }
         });
@@ -193,12 +205,12 @@ class Tetrimino {
     showGameOver() {
         this.isGameOver = true;
         document.getElementById("game-over").style.display = "flex";
-}
+    }
 
     drawNextTetrimino() {
         const nextTetriminoElement = document.getElementById("next-tetrimino");
         nextTetriminoElement.innerHTML = "";
-  
+
         for (let y = 0; y < 4; y++) {
             for (let x = 0; x < 4; x++) {
                 const cell = document.createElement("div");
@@ -206,15 +218,15 @@ class Tetrimino {
                 nextTetriminoElement.appendChild(cell);
             }
         }
-  
-        this.nextTetrimino.shape.forEach((row, y) => {
-            row.forEach((value, x) => {
-                if (value) {
-                    const index = 4 * y + x;
-                    nextTetriminoElement.childNodes[index].classList.remove("empty");
-                    nextTetriminoElement.childNodes[index].classList.add(this.nextTetrimino.color);
-                }
-            });
+
+        this.nextTetrimino.blocks.forEach((block) => {
+            const x = block.x;
+            const y = block.y;
+            if (y >= 0 && y < 4 && x >= 0 && x < 4) {
+                const index = y * 4 + x;
+                nextTetriminoElement.childNodes[index].classList.remove("empty");
+                nextTetriminoElement.childNodes[index].classList.add(this.nextTetrimino.color);
+            }
         });
     }
 
