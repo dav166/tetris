@@ -1,7 +1,7 @@
 
 class Tetrimino {
-    constructor(shape, color) {
-      this.shape = shape;
+    constructor(blocks, color) {
+      this.blocks = blocks;
       this.color = color;
       this.x = 5;
       this.y = 0;
@@ -27,49 +27,37 @@ class Tetrimino {
 
     randomTetrimino() {
         const tetriminos = [
-          { shape: [[1, 1], [1, 1]], color: 'O' },
-          { shape: [[1, 1, 1, 1]], color: 'I' },
-          { shape: [[0, 1, 0], [1, 1, 1]], color: 'T' },
-          { shape: [[0, 1, 1], [1, 1, 0]], color: 'S' },
-          { shape: [[1, 1, 0], [0, 1, 1]], color: 'Z' },
-          { shape: [[1, 0, 0], [1, 1, 1]], color: 'J' },
-          { shape: [[0, 0, 1], [1, 1, 1]], color: 'L' }
+            { blocks: [{x: 0, y: 0}, {x: 1, y: 0}, {x: 0, y: 1}, {x: 1, y: 1}], color: 'O' },
+            { blocks: [{x: 0, y: 0}, {x: 1, y: 0}, {x: 2, y: 0}, {x: 3, y: 0}], color: 'I' },
+            { blocks: [{x: 0, y: 1}, {x: 1, y: 0}, {x: 1, y: 1}, {x: 2, y: 1}], color: 'T' },
+            { blocks: [{x: 1, y: 0}, {x: 2, y: 0}, {x: 0, y: 1}, {x: 1, y: 1}], color: 'S' },
+            { blocks: [{x: 0, y: 0}, {x: 1, y: 0}, {x: 1, y: 1}, {x: 2, y: 1}], color: 'Z' },
+            { blocks: [{x: 0, y: 0}, {x: 0, y: 1}, {x: 1, y: 1}, {x: 2, y: 1}], color: 'J' },
+            { blocks: [{x: 2, y: 0}, {x: 0, y: 1}, {x: 1, y: 1}, {x: 2, y: 1}], color: 'L' },
         ];
         const randomIndex = Math.floor(Math.random() * tetriminos.length);
-        const { shape, color } = tetriminos[randomIndex];
-        return new Tetrimino(shape, color);
+        const { blocks, color } = tetriminos[randomIndex];
+        return new Tetrimino(blocks, color);
     }
 
     draw() {
         const gameBoardElement = document.getElementById("game-board");
         gameBoardElement.innerHTML = "";
-        for (let y = 0; y < 20; y++) {
-            for (let x = 0; x < 10; x++) {
-                const cell = document.createElement("div");
-                let cellType = 'empty';
-    
-                if (y >= this.currentTetrimino.y && x >= this.currentTetrimino.x &&
-                    y < this.currentTetrimino.y + this.currentTetrimino.shape.length &&
-                    x < this.currentTetrimino.x + this.currentTetrimino.shape[0].length &&
-                    this.currentTetrimino.shape[y - this.currentTetrimino.y][x - this.currentTetrimino.x]
-                ) {
-                    cellType = this.currentTetrimino.color;
-                } else {
-                    cellType = this.board[y][x] ? this.board[y][x] : 'empty';
-                }
-                cell.classList.add(cellType);
-                gameBoardElement.appendChild(cell);
+        this.currentTetrimino.blocks.forEach(block => {
+            const x = block.x + this.currentTetrimino.x;
+            const y = block.y + this.currentTetrimino.y;
+            if (y >= 0 && y < 20 && x >= 0 && x < 10) {
+                const index = y * 10 + x;
+                gameBoardElement.childNodes[index].classList.add(this.currentTetrimino.color);
             }
-        }
+        });
     }
 
     lockTetrimino() {
-        this.currentTetrimino.shape.forEach((row, y) => {
-            row.forEach((value, x) => {
-                if (value) {
-                    this.board[y + this.currentTetrimino.y][x + this.currentTetrimino.x] = this.currentTetrimino.color;
-                }
-            });
+        this.currentTetrimino.blocks.forEach(block => {
+            const x = block.x + this.currentTetrimino.x;
+            const y = block.y + this.currentTetrimino.y;
+            this.board[y][x] = this.currentTetrimino.color;
         });
     }
 
@@ -115,24 +103,19 @@ class Tetrimino {
     }
 
     checkCollision() {
-        for (let y = 0; y < this.currentTetrimino.shape.length; y++) {
-          for (let x = 0; x < this.currentTetrimino.shape[y].length; x++) {
-            if (this.currentTetrimino.shape[y][x]) {
-              if (
-                // outside the game bounds
-                this.currentTetrimino.y + y >= this.board.length ||
-                this.currentTetrimino.x + x < 0 ||
-                this.currentTetrimino.x + x >= this.board[0].length ||
-                // collides with another tetrimino
-                this.board[this.currentTetrimino.y + y][this.currentTetrimino.x + x] !== 0
-              ) {
+        for (const block of this.currentTetrimino.blocks) {
+            const x = block.x + this.currentTetrimino.x;
+            const y = block.y + this.currentTetrimino.y;
+            if (
+                x < 0 || x >= this.board[0].length ||
+                y >= this.board.length ||
+                this.board[y][x] !== 0
+            ) {
                 return true;
-              }
             }
-          }
         }
         return false;
-    }      
+    }
 
     clearLines() {
         for (let y = 19; y >= 0; ) {
@@ -174,25 +157,18 @@ class Tetrimino {
     }
 
     rotate() {
-        const newShape = []
-
-        for (let y = 0; y < this.currentTetrimino.shape[0].length; y++) {
-            newShape[y] = [];
-            for (let x = 0; x < this.currentTetrimino.shape.length; x++) {
-                newShape[y][x] = this.currentTetrimino.shape[this.currentTetrimino.shape.length - 1 - x][y];
-            }
-        }
-
-        const currentShape = this.currentTetrimino.shape;
-
-        this.currentTetrimino.shape = newShape;
-
+        const newBlocks = this.currentTetrimino.blocks.map(block => {
+            return { x: -block.y, y: block.x };
+        });
+        
+        const originalBlocks = [...this.currentTetrimino.blocks];
+        this.currentTetrimino.blocks = newBlocks;
+    
         if (this.checkCollision()) {
-            this.currentTetrimino.shape = currentShape;
+            this.currentTetrimino.blocks = originalBlocks;
         }
-
+    
         this.draw();
-
     }
 
     updateScoreboard() {
