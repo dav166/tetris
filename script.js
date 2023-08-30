@@ -1,4 +1,4 @@
-
+// Class for individual Tetriminos
 class Tetrimino {
     constructor(blocks, color) {
       this.blocks = blocks;
@@ -8,8 +8,10 @@ class Tetrimino {
     }
 }
   
+// Main game logic
   class Game {
     constructor() {
+        // Initialize board, score, and other state variables
         this.board = Array.from({ length: 20 }, () => Array(10).fill(0));
         this.score = 0;
         this.lines = 0;
@@ -18,6 +20,7 @@ class Tetrimino {
         this.isPaused = false;
         this.currentTetrimino = this.randomTetrimino();
         this.nextTetrimino = this.randomTetrimino();
+        this.highScore = localStorage.getItem('highScore') || 0; // Load high score from local storage
         this.init();
     }
 
@@ -141,6 +144,12 @@ class Tetrimino {
             }
         }
         this.level = Math.floor(this.lines / 10) + 1;
+
+        // Check and update high score
+        if (this.score > this.highScore) {
+            this.highScore = this.score;
+            localStorage.setItem('highScore', this.highScore);
+        }
     }
 
     moveLeft() {
@@ -187,6 +196,7 @@ class Tetrimino {
         document.getElementById("score-value").textContent = this.score;
         document.getElementById("lines-value").textContent = this.lines;
         document.getElementById("level-value").textContent = this.level;
+        document.getElementById("high-score-value").textContent = this.highScore;
     }
 
     restart() {
