@@ -9,7 +9,7 @@ class Tetrimino {
 }
   
 // Main game logic
-  class Game {
+class Game {
     constructor() {
         // Initialize board, score, and other state variables
         this.board = Array.from({ length: 20 }, () => Array(10).fill(0));

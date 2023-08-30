@@ -81,3 +81,10 @@ button:hover {
     align-items: center;
     z-index: 10;
 }
+
+@media only screen and (max-width: 600px) {
+    #game-board {
+        width: 150px;
+        height: 300px;
+    }
+}
