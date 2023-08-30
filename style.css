@@ -54,6 +54,10 @@ button:hover {
     background: #ccc;
 }
 
+.clearing {
+    background: #fff;
+}
+
 .empty {
     background: #000;
 }

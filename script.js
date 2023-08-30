@@ -132,9 +132,12 @@ class Game {
         return false;
     }
 
-    clearLines() {
-        for (let y = 19; y >= 0; ) {
+    async clearLines() {
+        let y = 19;
+        while (y>= 0) {
             if (this.board[y].every(cell => cell !== 0)) {
+                // Row clear animation
+                await this.animateRowClear(y);
                 this.board.splice(y, 1);
                 this.board.unshift(Array(10).fill(0));
                 this.lines++;
@@ -150,6 +153,17 @@ class Game {
             this.highScore = this.score;
             localStorage.setItem('highScore', this.highScore);
         }
+    }
+
+    async animateRowClear(y) {
+        return new Promise(resolve => {
+            // Change the row color for animation
+            this.board[y] = this.board[y].map(() => 'clearing');
+            this.draw();
+            setTimeout(() => {
+                resolve();
+            }, 300); // Duration
+        });
     }
 
     moveLeft() {
