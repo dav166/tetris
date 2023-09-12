@@ -286,5 +286,8 @@ document.getElementById("start-pause").addEventListener("click", () => {
     } else {
       game.start();
     }
-  });
-document.getElementById("game-over-restart").addEventListener("click", () => game.restart());
+});
+
+document.getElementById("game-over-restart").addEventListener("click", () => 
+    game.restart()
+);
