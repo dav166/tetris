@@ -47,26 +47,38 @@ class Game {
     }
 
     draw() {
+        this.drawBoard();
+        this.drawCurrentTetrimino();
+    }
+
+    drawBoard() {
         const gameBoardElement = document.getElementById("game-board");
         gameBoardElement.innerHTML = "";
     
         // Draw the static blocks on the board
-        for (let y = 0; y < this.board.length; y++) {
-            for (let x = 0; x < this.board[y].length; x++) {
+        for (let y = 0; y < BOARD_HEIGHT; y++) {
+            for (let x = 0; x < BOARD_WIDTH; x++) {
                 const cell = document.createElement("div");
                 cell.className = this.board[y][x] ? this.board[y][x] : 'empty';
                 gameBoardElement.appendChild(cell);
             }
         }
-    
+    }
+
+    drawCurrentTetrimino() {
+        const gameBoardElement = document.getElementById("game-board");
+        
         // Draw the current Tetrimino
         this.currentTetrimino.blocks.forEach((block) => {
             const x = block.x + this.currentTetrimino.x;
             const y = block.y + this.currentTetrimino.y;
             if (y >= 0) {
                 const index = y * BOARD_WIDTH + x;
-                gameBoardElement.childNodes[index].classList.remove("empty");
-                gameBoardElement.childNodes[index].classList.add(this.currentTetrimino.color);
+                const cell = gameBoardElement.childNodes[index];
+                if (cell) {
+                    cell.classList.remove("empty");
+                    cell.classList.add(this.currentTetrimino.color);
+                }
             }
         });
     }
@@ -293,7 +305,7 @@ const keyMap = {
 const BOARD_WIDTH = 10;
 const BOARD_HEIGHT = 20;
 
-document.addEventListener("keydown", function(event) {
+document.addEventListener("keydown", (event) => {
     if (keyMap[event.keyCode]) {
         event.preventDefault(); // Prevents default browser actions
         const action = keyMap[event.keyCode];
