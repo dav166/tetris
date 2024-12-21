@@ -378,3 +378,8 @@ document.getElementById("start-pause").addEventListener("click", () => {
 document.getElementById("game-over-restart").addEventListener("click", () => 
     game.restart()
 );
+
+document.getElementById("left-button").addEventListener("click", () => game.moveLeft());
+document.getElementById("right-button").addEventListener("click", () => game.moveRight());
+document.getElementById("down-button").addEventListener("click", () => game.moveDown());
+document.getElementById("rotate-button").addEventListener("click", () => game.rotate());
