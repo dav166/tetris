@@ -192,15 +192,24 @@ class Game {
     }
 
     rotate() {
-        const newBlocks = this.currentTetrimino.blocks.map(block => {
-            return { x: -block.y, y: block.x };
-        });
-        
-        const originalBlocks = [...this.currentTetrimino.blocks];
+        const newBlocks = this.currentTetrimino.blocks.map(block => ({ x: -block.y, y: block.x }));
+        const originalX = this.currentTetrimino.x;
+        const originalBlocks = this.currentTetrimino.blocks;
         this.currentTetrimino.blocks = newBlocks;
     
-        if (this.checkCollision()) {
+        const offsets = [0, -1, 1, -2, 2]; // Possible shifts
+        let collision = true;
+        for (let offset of offsets) {
+            this.currentTetrimino.x = originalX + offset;
+            if (!this.checkCollision()) {
+                collision = false;
+                break;
+            }
+        }
+
+        if (collision) {
             this.currentTetrimino.blocks = originalBlocks;
+            this.currentTetrimino.x = originalX;
         }
     
         this.draw();
