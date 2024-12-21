@@ -153,20 +153,27 @@ class Game {
     }
 
     async clearLines() {
-        let y = 19;
-        while (y>= 0) {
+        let linesCleared = 0;
+        for (let y = BOARD_HEIGHT - 1; y >= 0; y--) {
             if (this.board[y].every(cell => cell !== 0)) {
-                // Row clear animation
                 await this.animateRowClear(y);
                 this.board.splice(y, 1);
                 this.board.unshift(Array(BOARD_WIDTH).fill(0));
-                this.lines++;
-                this.score += 10;
-            } else {
-                y--;
+                linesCleared++;
+                y++; // Recheck the same row
             }
         }
-        this.level = Math.floor(this.lines / 10) + 1;
+
+        if (linesCleared > 0) {
+            this.lines += linesCleared;
+
+            // Scoring based on Tetris guidelines
+            const lineClearPoints = [0, 40, 100, 300, 1200];
+            this.score += lineClearPoints[linesCleared] * this.level;
+            
+            this.level = Math.floor(this.lines / 10) + 1;
+        }
+        
 
         // Check and update high score
         if (this.score > this.highScore) {
