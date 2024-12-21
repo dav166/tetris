@@ -1,3 +1,7 @@
+// Board Dimensions
+const BOARD_WIDTH = 10;
+const BOARD_HEIGHT = 20;
+
 // Class for individual Tetriminos
 class Tetrimino {
     constructor(blocks, color) {
@@ -354,10 +358,6 @@ const keyMap = {
     67: 'hold', // 'C' key to hold
     80: 'togglePause'
 };
-
-// Board Dimensions
-const BOARD_WIDTH = 10;
-const BOARD_HEIGHT = 20;
 
 document.addEventListener("keydown", (event) => {
     if (keyMap[event.keyCode]) {
