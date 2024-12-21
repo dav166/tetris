@@ -24,6 +24,8 @@ class Game {
         this.dropCounter = 0;
         this.dropInterval = 1000; //Initial drop speed (1 second)
         this.lastTime = 0;
+        this.holdTetrimino = null;
+        this.canHold = true;
         this.init();
     }
 
@@ -89,6 +91,7 @@ class Game {
             const y = block.y + this.currentTetrimino.y;
             this.board[y][x] = this.currentTetrimino.color;
         });
+        this.canHold = true;
     }
 
     togglePause() {
@@ -232,6 +235,49 @@ class Game {
         this.draw();
     }
 
+    hold() {
+        if (!this.canHold) return;
+        this.canHold = false;
+
+        if (this.holdTetrimino) {
+            [this.currentTetrimino, this.holdTetrimino] = [this.holdTetrimino, this.currentTetrimino];
+            this.currentTetrimino.x = Math.floor(BOARD_WIDTH / 2) - 1;
+            this.currentTetrimino.y = 0;
+        } else {
+            this.holdTetrimino = this.currentTetrimino;
+            this.currentTetrimino = this.nextTetrimino;
+            this.nextTetrimino = this.randomTetrimino();
+            this.drawNextTetrimino();
+        }
+        this.drawHoldTetrimino();
+        this.draw();
+    }
+
+    drawHoldTetrimino() {
+        const holdTetriminoElement = document.getElementById("hold-tetrimino");
+        holdTetriminoElement,innerHTML = "";
+
+        for(let y = 0; y < 4; y++) {
+            for(let x = 0; x < 4; x++) {
+                const cell = document.createElement("div");
+                cell.classList.add("empty");
+                holdTetriminoElement.appendChild(cell);
+            }
+        }
+
+        if (this.holdTetrimino) {
+            this.holdTetrimino.blocks.forEach((block) => {
+                const x = block.x;
+                const y = block.y;
+                if (y >= 0 && y < 4 && x >= 0 && x < 4) {
+                    const index = y * 4 + x;
+                    holdTetriminoElement.childNodes[index].classList.remove("empty");
+                    holdTetriminoElement.childNodes[index].classList.add(this.holdTetrimino.color);
+                }
+            });
+        }
+    }
+
     updateScoreboard() {
         document.getElementById("score-value").textContent = this.score;
         document.getElementById("lines-value").textContent = this.lines;
@@ -298,6 +344,7 @@ const keyMap = {
     39: 'moveRight',
     40: 'moveDown',
     38: 'rotate',
+    67: 'hold', // 'C' key to hold
     80: 'togglePause'
 };
 
