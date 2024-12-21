@@ -274,8 +274,9 @@ const keyMap = {
 };
 
 document.addEventListener("keydown", function(event) {
-    const action = keyMap[event.keyCode];
-    if (action) {
+    if (keyMap[event.keyCode]) {
+        event.preventDefault(); // Prevents default browser actions
+        const action = keyMap[event.keyCode];
         game[action]();
     }
 });
