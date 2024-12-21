@@ -266,7 +266,7 @@ class Game {
 
     drawHoldTetrimino() {
         const holdTetriminoElement = document.getElementById("hold-tetrimino");
-        holdTetriminoElement,innerHTML = "";
+        holdTetriminoElement.innerHTML = "";
 
         for(let y = 0; y < 4; y++) {
             for(let x = 0; x < 4; x++) {
