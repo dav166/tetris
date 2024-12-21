@@ -21,6 +21,9 @@ class Game {
         this.currentTetrimino = this.randomTetrimino();
         this.nextTetrimino = this.randomTetrimino();
         this.highScore = localStorage.getItem('highScore') || 0; // Load high score from local storage
+        this.dropCounter = 0;
+        this.dropInterval = 1000; //Initial drop speed (1 second)
+        this.lastTime = 0;
         this.init();
     }
 
@@ -84,37 +87,39 @@ class Game {
         document.getElementById("start-pause").textContent = this.isPaused ? "Resume" : "Pause";
     }
 
-    gameLoop() {
+    gameLoop(time = 0) {
         if (this.isGameOver || this.isPaused) return;
     
-        // Move the Tetrimino down by one square
-        this.currentTetrimino.y++;
-  
-        // Collision detection and other game logic go here...
-        if (this.checkCollision()) {
-            // Revert the move
-            this.currentTetrimino.y--;
-            // Lock the Tetrimino and generate a new one
-            this.lockTetrimino();
-            this.currentTetrimino = this.nextTetrimino;
-            this.nextTetrimino = this.randomTetrimino();
-            this.drawNextTetrimino();
+        const deltaTime = time - this.lastTime;
+        this.lastTime = time;
+        this.dropCounter += deltaTime;
 
+        if (this.dropCounter > this.dropInterval) {
+            this.currentTetrimino.y++;
             if (this.checkCollision()) {
-                this.showGameOver();
-                return;
+                this.currentTetrimino.y--;
+                this.lockTetrimino();
+                this.currentTetrimino = this.nextTetrimino;
+                this.nextTetrimino = this.randomTetrimino();
+                this.drawNextTetrimino();
+
+                if (this.checkCollision()) {
+                    this.showGameOver();
+                    return;
+                }
             }
+            this.dropCounter = 0;
         }
 
-        // Clear lines and update score
+        // Clear lines, draw, update scoreboard
         this.clearLines();
-        // Draw the updated state
         this.draw();
-        // Update the scoreboard
         this.updateScoreboard();
 
-        const speed = Math.max(50, 500 - (this.level * 50));
-        setTimeout(() => this.gameLoop(), speed);
+        // Adjust drop interval based on level
+        this.dropInterval = Math.max(100, 1000 - (this.level * 100));
+
+        requestAnimationFrame((time) => this.gameLoop(time));
     }
 
     checkCollision() {
@@ -264,9 +269,11 @@ class Game {
     }
 
     start() {
+        this.lastTime = 0;
+        this.dropCounter = 0;
         this.draw();
         this.updateScoreboard();
-        this.gameLoop();
+        requestAnimationFrame((time) => this.gameLoop(time));
     }
 }
 
