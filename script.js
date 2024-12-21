@@ -12,7 +12,7 @@ class Tetrimino {
 class Game {
     constructor() {
         // Initialize board, score, and other state variables
-        this.board = Array.from({ length: 20 }, () => Array(10).fill(0));
+        this.board = Array.from({ length: BOARD_HEIGHT }, () => Array(BOARD_WIDTH).fill(0));
         this.score = 0;
         this.lines = 0;
         this.level = 1;
@@ -61,7 +61,7 @@ class Game {
             const x = block.x + this.currentTetrimino.x;
             const y = block.y + this.currentTetrimino.y;
             if (y >= 0) {
-                const index = y * 10 + x;  // 10 is the width of the board
+                const index = y * BOARD_WIDTH + x;
                 gameBoardElement.childNodes[index].classList.remove("empty");
                 gameBoardElement.childNodes[index].classList.add(this.currentTetrimino.color);
             }
@@ -139,7 +139,7 @@ class Game {
                 // Row clear animation
                 await this.animateRowClear(y);
                 this.board.splice(y, 1);
-                this.board.unshift(Array(10).fill(0));
+                this.board.unshift(Array(BOARD_WIDTH).fill(0));
                 this.lines++;
                 this.score += 10;
             } else {
@@ -223,7 +223,7 @@ class Game {
     }
 
     restart() {
-        this.board = Array.from({ length: 20 }, () => Array(10).fill(0));
+        this.board = Array.from({ length: BOARD_HEIGHT }, () => Array(BOARD_WIDTH).fill(0));
         this.score = 0;
         this.lines = 0;
         this.level = 1;
@@ -281,6 +281,10 @@ const keyMap = {
     38: 'rotate',
     80: 'togglePause'
 };
+
+// Board Dimensions
+const BOARD_WIDTH = 10;
+const BOARD_HEIGHT = 20;
 
 document.addEventListener("keydown", function(event) {
     if (keyMap[event.keyCode]) {
