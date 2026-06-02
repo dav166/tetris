@@ -312,6 +312,9 @@ class Game {
     showGameOver() {
         this.isGameOver = true;
         document.getElementById("game-over").style.display = "flex";
+        document.getElementById("game-over-score-value").textContent = this.score;
+        document.getElementById("game-over-lines-value").textContent = this.lines;
+        document.getElementById("game-over-level-value").textContent = this.level;
     }
 
     drawNextTetrimino() {
@@ -380,7 +383,8 @@ document.getElementById("game-over-restart").addEventListener("click", () =>
 );
 
 document.getElementById("restart-button").addEventListener("click", () => 
-    game.restart());
+    game.restart()
+);
 
 document.getElementById("left-button").addEventListener("click", () => 
     game.moveLeft());
