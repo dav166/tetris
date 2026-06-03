@@ -154,8 +154,7 @@ class Game {
             this.dropCounter = 0;
         }
 
-        // Clear lines, draw, update scoreboard
-        this.clearLines();
+        // Draw, update scoreboard
         this.draw();
         this.updateScoreboard();
 
