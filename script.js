@@ -100,6 +100,29 @@ class Game {
         this.canHold = true;
     }
 
+    async lockAndAdvance() {
+        this.lockTetrimino();
+
+        await this.clearLines();
+
+        this.currentTetrimino = this.nextTetrimino;
+        this.currentTetrimino.x = 5;
+        this.currentTetrimino.y = 0;
+
+        this.nextTetrimino = this.randomTetrimino();
+        this.drawNextTetrimino();
+
+        this.canHold = true;
+
+        if (this.checkCollision()) {
+            this.showGameOver();
+            return;
+        }
+
+        this.draw();
+        this.updateScoreboard();
+    }
+
     togglePause() {
         if (!this.hasStarted) {
             this.start();
