@@ -358,16 +358,40 @@ class Game {
     }
 
     restart() {
+        if (this.animationFrameId) {
+            cancelAnimationFrame(this.animationFrameId);
+            this.animationFrameId = null;
+        }
+        
         this.board = Array.from({ length: BOARD_HEIGHT }, () => Array(BOARD_WIDTH).fill(0));
         this.score = 0;
         this.lines = 0;
         this.level = 1;
+        
         this.isGameOver = false;
+        this.isPaused = false;
+        this.isClearing = false;
+        this.hasStarted = false;
+        
         this.currentTetrimino = this.randomTetrimino();
         this.nextTetrimino = this.randomTetrimino();
+        
+        this.dropCounter = 0;
+        this.dropInterval = 1000;
+        this.lastTime = 0;
+        
+        this.holdTetrimino = null;
+        this.canHold = true;
+        
+        document.getElementById("game-over").style.display = "none";
+        document.getElementById("start-pause").textContent = "Start";
+        
+        this.draw();
+        this.drawNextTetrimino();
+        this.drawHoldTetrimino();
         this.updateScoreboard();
-        document.getElementById("game-over").style.display = "none"; // Hide the game-over screen
-        this.gameLoop();
+        
+        this.start();
     }
 
     showGameOver() {
