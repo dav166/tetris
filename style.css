@@ -90,6 +90,7 @@ button:hover {
     margin-top: 10px;
 }
 
+#next-tetrimino,
 #hold-tetrimino {
     width: 80px;
     height: 80px;
