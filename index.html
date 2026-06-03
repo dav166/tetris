@@ -8,39 +8,69 @@
 </head>
 <body>
   <div id="game-container">
-    <h2>Tetris</h2>
-      <h3 id="high-score">High Score: <span id="high-score-value"></span></h3>
-    <div id="score-panel">
-      <div id="score">Score: <span id="score-value">0</span></div>
-      <div id="lines">Lines: <span id="lines-value">0</span></div>
-      <div id="level">Level: <span id="level-value">0</span></div>
+    <header id="game-header">
+      <h1>Tetris</h1>
+      <p id="subtitle">Stack blocks. Clear lines. Chase glory.</p>
+    </header>
+
+    <div id="game-layout">
+      <aside class="side-panel">
+        <h2>Stats</h2>
+
+        <div id="score-panel">
+          <div id="score">Score: <span id="score-value">0</span></div>
+          <div id="lines">Lines: <span id="lines-value">0</span></div>
+          <div id="level">Level: <span id="level-value">1</span></div>
+          <div id="high-score">High Score: <span id="high-score-value">0</span></div>
+        </div>
+      </aside>
+
+      <main id="game-board" aria-label="Tetris game board"></main>
+
+      <aside class="side-panel">
+        <section class="preview-panel">
+          <h2>Next</h2>
+          <div id="next-tetrimino"></div>
+        </section>
+
+        <section id="hold-container" class="preview-panel">
+          <h2>Hold</h2>
+          <div id="hold-tetrimino"></div>
+          <p class="hint">Press C</p>
+        </section>
+      </aside>
     </div>
-    <div id="game-board"></div>
-    <div id="next-tetrimino"></div>
+
     <div id="controls">
       <button id="start-pause">Start</button>
       <button id="restart-button">Restart</button>
     </div>
+
     <div id="touch-controls">
       <button id="left-button">Left</button>
       <button id="rotate-button">Rotate</button>
       <button id="right-button">Right</button>
       <button id="down-button">Down</button>
     </div>
-    <div id="hold-container">
-      <h3>Hold</h3>
-      <div id="hold-tetrimino"></div>
+
+    <p id="keyboard-hint">
+      Move: Arrow Keys · Rotate: Up · Soft Drop: Down · Hold: C · Pause: P
+    </p>
+  </div>
+
+  <div id="game-over" style="display: none;">
+    <div id="game-over-card">
+      <h1>Game Over</h1>
+
+      <div id="game-over-score">Score: <span id="game-over-score-value">0</span></div>
+      <div id="game-over-lines">Lines: <span id="game-over-lines-value">0</span></div>
+      <div id="game-over-level">Level: <span id="game-over-level-value">1</span></div>
+      <div id="game-over-high-score">High Score: <span id="game-over-high-score-value">0</span></div>
+
+      <button id="game-over-restart">Restart</button>
     </div>
   </div>
-  <div id="game-over" style="display: none;">
-    <h1>Game Over</h1>
 
-    <div id="game-over-score">Score: <span id="game-over-score-value">0</span></div>
-    <div id="game-over-lines">Lines: <span id="game-over-lines-value">0</span></div>
-    <div id="game-over-level">Level: <span id="game-over-level-value">0</span></div>
-
-    <button id="game-over-restart">Restart</button>
-  </div>
   <script src="script.js"></script>
 </body>
 </html>
