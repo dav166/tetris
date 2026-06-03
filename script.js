@@ -22,6 +22,7 @@ class Game {
         this.level = 1;
         this.isGameOver = false;
         this.isPaused = false;
+        this.isClearing = false;
         this.currentTetrimino = this.randomTetrimino();
         this.nextTetrimino = this.randomTetrimino();
         this.highScore = localStorage.getItem('highScore') || 0; // Load high score from local storage
@@ -101,6 +102,8 @@ class Game {
     }
 
     async lockAndAdvance() {
+        this.isClearing = true;
+
         this.lockTetrimino();
 
         await this.clearLines();
@@ -113,6 +116,7 @@ class Game {
         this.drawNextTetrimino();
 
         this.canHold = true;
+        this.isClearing = false;
 
         if (this.checkCollision()) {
             this.showGameOver();
@@ -237,7 +241,13 @@ class Game {
         });
     }
 
+    canUseControls() {
+        return !this.isGameOver && !this.isPaused && !this.isClearing;
+    }
+
     moveLeft() {
+        if (!this.canUseControls()) return;
+
         this.currentTetrimino.x--;
         if (this.checkCollision()) {
             this.currentTetrimino.x++;
@@ -246,6 +256,8 @@ class Game {
     }
 
     moveRight() {
+        if (!this.canUseControls()) return;
+
         this.currentTetrimino.x++;
         if (this.checkCollision()) {
             this.currentTetrimino.x--;
@@ -254,6 +266,8 @@ class Game {
     }
 
     async moveDown() {
+        if (!this.canUseControls()) return;
+
         this.currentTetrimino.y++;
 
         if (this.checkCollision()) {
@@ -266,6 +280,8 @@ class Game {
     }
 
     rotate() {
+        if (!this.canUseControls()) return;
+
         const newBlocks = this.currentTetrimino.blocks.map(block => ({ x: -block.y, y: block.x }));
         const originalX = this.currentTetrimino.x;
         const originalBlocks = this.currentTetrimino.blocks;
@@ -290,7 +306,9 @@ class Game {
     }
 
     hold() {
+        if (!this.canUseControls()) return;
         if (!this.canHold) return;
+        
         this.canHold = false;
 
         if (this.holdTetrimino) {
