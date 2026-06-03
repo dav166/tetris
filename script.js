@@ -26,8 +26,10 @@ class Game {
         this.nextTetrimino = this.randomTetrimino();
         this.highScore = localStorage.getItem('highScore') || 0; // Load high score from local storage
         this.dropCounter = 0;
-        this.dropInterval = 1000; //Initial drop speed (1 second)
+        this.dropInterval = 1000; // Initial drop speed: 1 second
         this.lastTime = 0;
+        this.animationFrameId = null;
+        this.hasStarted = false;
         this.holdTetrimino = null;
         this.canHold = true;
         this.init();
@@ -107,8 +109,11 @@ class Game {
     }
 
     gameLoop(time = 0) {
-        if (this.isGameOver || this.isPaused) return;
-    
+        if (this.isGameOver || this.isPaused) {
+            this.animationFrameId = null;
+            return;
+        }   
+
         const deltaTime = time - this.lastTime;
         this.lastTime = time;
         this.dropCounter += deltaTime;
@@ -138,7 +143,7 @@ class Game {
         // Adjust drop interval based on level
         this.dropInterval = Math.max(100, 1000 - (this.level * 100));
 
-        requestAnimationFrame((time) => this.gameLoop(time));
+        this.animationFrameId = requestAnimationFrame((time) => this.gameLoop(time));
     }
 
     checkCollision() {
@@ -341,14 +346,23 @@ class Game {
     }
 
     start() {
+        if (this.hasStarted && !this.isPaused) return;
+
+        this.hasStarted = true;
+        this.isPaused = false;
         this.lastTime = 0;
         this.dropCounter = 0;
+
+        document.getElementById("start-pause").textContent = "Pause";
+
         this.draw();
         this.updateScoreboard();
-        requestAnimationFrame((time) => this.gameLoop(time));
+
+        if (!this.animationFrameId) {
+            this.animationFrameId = requestAnimationFrame((time) => this.gameLoop(time));
+        }
     }
 }
-
 // ... Initialization code ...
 const game = new Game();
 
