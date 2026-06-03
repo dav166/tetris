@@ -253,12 +253,15 @@ class Game {
         this.draw();
     }
 
-    moveDown() {
+    async moveDown() {
         this.currentTetrimino.y++;
+
         if (this.checkCollision()) {
             this.currentTetrimino.y--;
-            this.lockTetrimino();
+            await this.lockAndAdvance();
+            return;
         }
+
         this.draw();
     }
 
