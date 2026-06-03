@@ -150,7 +150,7 @@ class Game {
         }
     }
 
-    gameLoop(time = 0) {
+    async gameLoop(time = 0) {
         if (this.isGameOver || this.isPaused) {
             this.animationFrameId = null;
             return;
@@ -162,18 +162,12 @@ class Game {
 
         if (this.dropCounter > this.dropInterval) {
             this.currentTetrimino.y++;
+
             if (this.checkCollision()) {
                 this.currentTetrimino.y--;
-                this.lockTetrimino();
-                this.currentTetrimino = this.nextTetrimino;
-                this.nextTetrimino = this.randomTetrimino();
-                this.drawNextTetrimino();
-
-                if (this.checkCollision()) {
-                    this.showGameOver();
-                    return;
-                }
+                await this.lockAndAdvance();
             }
+
             this.dropCounter = 0;
         }
 
