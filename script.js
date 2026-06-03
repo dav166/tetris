@@ -101,11 +101,30 @@ class Game {
     }
 
     togglePause() {
-        this.isPaused = !this.isPaused;
-        if (!this.isPaused) {
-            this.gameLoop();
+        if (!this.hasStarted) {
+            this.start();
+            return;
         }
+
+        if (this.isGameOver) return;
+
+        this.isPaused = !this.isPaused;
         document.getElementById("start-pause").textContent = this.isPaused ? "Resume" : "Pause";
+
+        if (this.isPaused) {
+            if (this.animationFrameId) {
+                cancelAnimationFrame(this.animationFrameId);
+                this.animationFrameId = null;
+            }
+
+            return;
+        }
+
+        this.lastTime = 0;
+
+        if (!this.animationFrameId) {
+            this.animationFrameId = requestAnimationFrame((time) => this.gameLoop(time));
+        }
     }
 
     gameLoop(time = 0) {
@@ -385,11 +404,7 @@ document.addEventListener("keydown", (event) => {
 });
 
 document.getElementById("start-pause").addEventListener("click", () => {
-    if (game.isPaused) {
-      game.togglePause();
-    } else {
-      game.start();
-    }
+    game.togglePause();
 });
 
 document.getElementById("game-over-restart").addEventListener("click", () => 
