@@ -37,7 +37,10 @@ class Game {
     }
 
     init() {
+        this.draw();
         this.drawNextTetrimino();
+        this.drawHoldTetrimino();
+        this.updateScoreboard();
     }
 
     randomTetrimino() {
