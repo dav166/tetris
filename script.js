@@ -150,9 +150,16 @@ class Game {
         this.updateScoreboard();
     }
 
+    refillTetriminoBag() {
+        this.tetriminoBag = shuffle(TETRIMINO_TEMPLATES);
+    }
+
     randomTetrimino() {
-        const randomIndex = Math.floor(Math.random() * TETRIMINO_TEMPLATES.length);
-        const { blocks, color } = TETRIMINO_TEMPLATES[randomIndex];
+        if (this.tetriminoBag.length === 0) {
+            this.refillTetriminoBag();
+        }
+
+        const { blocks, color } = this.tetriminoBag.pop();
 
         return new Tetrimino(blocks, color);
     }
