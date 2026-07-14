@@ -665,3 +665,7 @@ document.getElementById("down-button").addEventListener("click", () => {
 document.getElementById("rotate-button").addEventListener("click", () => {
     game.rotate();
 });
+
+document.getElementById("hard-drop-button").addEventListener("click", () => {
+    game.hardDrop();
+});
