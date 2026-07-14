@@ -164,6 +164,18 @@ class Game {
         return new Tetrimino(blocks, color);
     }
 
+    createTetriminoByColor(color) {
+        const template = TETRIMINO_TEMPLATES.find((tetrimino) => {
+            return tetrimino.color === color;
+        });
+
+        if (!template) {
+            throw new Error(`Unknown tetrimino color: ${color}`);
+        }
+
+        return new Tetrimino(template.blocks, template.color);
+    }
+
     canUseControls() {
         return this.hasStarted && !this.isPaused && !this.isGameOver && !this.isClearing;
     }
