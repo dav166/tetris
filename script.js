@@ -127,8 +127,8 @@ class Game {
 
         this.tetriminoBag = [];
 
-        this.currentTetrimino = this.randomTetrimino();
-        this.nextTetrimino = this.randomTetrimino();
+        this.currentTetrimino = this.getNextTetrimino();
+        this.nextTetrimino = this.getNextTetrimino();
 
         this.highScore = Number(localStorage.getItem("highScore")) || 0;
 
@@ -154,7 +154,7 @@ class Game {
         this.tetriminoBag = shuffle(TETRIMINO_TEMPLATES);
     }
 
-    randomTetrimino() {
+    getNextTetrimino() {
         if (this.tetriminoBag.length === 0) {
             this.refillTetriminoBag();
         }
@@ -332,7 +332,7 @@ class Game {
         this.currentTetrimino = this.nextTetrimino;
         this.currentTetrimino.resetPosition();
 
-        this.nextTetrimino = this.randomTetrimino();
+        this.nextTetrimino = this.getNextTetrimino();
         this.canHold = true;
 
         this.drawNextTetrimino();
@@ -528,7 +528,7 @@ class Game {
         } else {
             this.holdTetrimino = pieceToHold;
             this.currentTetrimino = this.nextTetrimino;
-            this.nextTetrimino = this.randomTetrimino();
+            this.nextTetrimino = this.getNextTetrimino();
             this.drawNextTetrimino();
         }
 
@@ -573,8 +573,8 @@ class Game {
 
         this.tetriminoBag = [];
 
-        this.currentTetrimino = this.randomTetrimino();
-        this.nextTetrimino = this.randomTetrimino();
+        this.currentTetrimino = this.getNextTetrimino();
+        this.nextTetrimino = this.getNextTetrimino();
 
         this.dropCounter = 0;
         this.dropInterval = STARTING_DROP_INTERVAL;
