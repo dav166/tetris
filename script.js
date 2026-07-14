@@ -215,10 +215,10 @@ class Game {
         });
     }
 
-    checkCollision() {
-        for (const block of this.currentTetrimino.blocks) {
-            const x = block.x + this.currentTetrimino.x;
-            const y = block.y + this.currentTetrimino.y;
+    wouldCollideAt(tetrimino, targetX, targetY) {
+        for (const block of tetrimino.blocks) {
+            const x = block.x + targetX;
+            const y = block.y + targetY;
 
             const isOutsideLeft = x < 0;
             const isOutsideRight = x >= BOARD_WIDTH;
@@ -235,6 +235,14 @@ class Game {
         }
 
         return false;
+    }
+
+    checkCollision() {
+        return this.wouldCollideAt(
+            this.currentTetrimino,
+            this.currentTetrimino.x,
+            this.currentTetrimino.y
+        );
     }
 
     lockTetrimino() {
