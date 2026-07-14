@@ -125,6 +125,8 @@ class Game {
         this.hasStarted = false;
         this.isClearing = false;
 
+        this.tetriminoBag = [];
+
         this.currentTetrimino = this.randomTetrimino();
         this.nextTetrimino = this.randomTetrimino();
 
