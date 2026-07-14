@@ -345,6 +345,29 @@ class Game {
         this.draw();
     }
 
+    async hardDrop() {
+        if (!this.canUseControls()) return;
+
+        let droppedRows = 0;
+
+        while (true) {
+            this.currentTetrimino.y++;
+
+            if (this.checkCollision()) {
+                this.currentTetrimino.y--;
+                break;
+            }
+
+            droppedRows++;
+        }
+
+        this.score += droppedRows * 2;
+        this.updateHighScore();
+        this.updateScoreboard();
+
+        await this.lockAndAdvance();
+    }
+
     moveLeft() {
         if (!this.canUseControls()) return;
 
