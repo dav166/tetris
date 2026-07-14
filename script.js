@@ -621,6 +621,8 @@ const keyMap = {
     ArrowRight: "moveRight",
     ArrowDown: "moveDown",
     ArrowUp: "rotate",
+    " ": "hardDrop",
+    Spacebar: "hardDrop",
     c: "hold",
     C: "hold",
     p: "togglePause",
