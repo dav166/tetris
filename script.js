@@ -321,6 +321,10 @@ class Game {
             STARTING_DROP_INTERVAL - ((this.level - 1) * LEVEL_SPEED_STEP)
         );
 
+        this.updateHighScore();
+    }
+
+    updateHighScore() {
         if (this.score > this.highScore) {
             this.highScore = this.score;
             localStorage.setItem("highScore", this.highScore);
