@@ -16,6 +16,72 @@ const sleep = (milliseconds) => {
     return new Promise(resolve => setTimeout(resolve, milliseconds));
 };
 
+const TETRIMINO_TEMPLATES = [
+    {
+        blocks: [
+            { x: 0, y: 0 },
+            { x: 1, y: 0 },
+            { x: 0, y: 1 },
+            { x: 1, y: 1 }
+        ],
+        color: "O"
+    },
+    {
+        blocks: [
+            { x: 0, y: 0 },
+            { x: 1, y: 0 },
+            { x: 2, y: 0 },
+            { x: 3, y: 0 }
+        ],
+        color: "I"
+    },
+    {
+        blocks: [
+            { x: 0, y: 1 },
+            { x: 1, y: 0 },
+            { x: 1, y: 1 },
+            { x: 2, y: 1 }
+        ],
+        color: "T"
+    },
+    {
+        blocks: [
+            { x: 1, y: 0 },
+            { x: 2, y: 0 },
+            { x: 0, y: 1 },
+            { x: 1, y: 1 }
+        ],
+        color: "S"
+    },
+    {
+        blocks: [
+            { x: 0, y: 0 },
+            { x: 1, y: 0 },
+            { x: 1, y: 1 },
+            { x: 2, y: 1 }
+        ],
+        color: "Z"
+    },
+    {
+        blocks: [
+            { x: 0, y: 0 },
+            { x: 0, y: 1 },
+            { x: 1, y: 1 },
+            { x: 2, y: 1 }
+        ],
+        color: "J"
+    },
+    {
+        blocks: [
+            { x: 2, y: 0 },
+            { x: 0, y: 1 },
+            { x: 1, y: 1 },
+            { x: 2, y: 1 }
+        ],
+        color: "L"
+    }
+];
+
 // Class for individual Tetriminos
 class Tetrimino {
     constructor(blocks, color) {
@@ -68,74 +134,8 @@ class Game {
     }
 
     randomTetrimino() {
-        const tetriminos = [
-            {
-                blocks: [
-                    { x: 0, y: 0 },
-                    { x: 1, y: 0 },
-                    { x: 0, y: 1 },
-                    { x: 1, y: 1 }
-                ],
-                color: "O"
-            },
-            {
-                blocks: [
-                    { x: 0, y: 0 },
-                    { x: 1, y: 0 },
-                    { x: 2, y: 0 },
-                    { x: 3, y: 0 }
-                ],
-                color: "I"
-            },
-            {
-                blocks: [
-                    { x: 0, y: 1 },
-                    { x: 1, y: 0 },
-                    { x: 1, y: 1 },
-                    { x: 2, y: 1 }
-                ],
-                color: "T"
-            },
-            {
-                blocks: [
-                    { x: 1, y: 0 },
-                    { x: 2, y: 0 },
-                    { x: 0, y: 1 },
-                    { x: 1, y: 1 }
-                ],
-                color: "S"
-            },
-            {
-                blocks: [
-                    { x: 0, y: 0 },
-                    { x: 1, y: 0 },
-                    { x: 1, y: 1 },
-                    { x: 2, y: 1 }
-                ],
-                color: "Z"
-            },
-            {
-                blocks: [
-                    { x: 0, y: 0 },
-                    { x: 0, y: 1 },
-                    { x: 1, y: 1 },
-                    { x: 2, y: 1 }
-                ],
-                color: "J"
-            },
-            {
-                blocks: [
-                    { x: 2, y: 0 },
-                    { x: 0, y: 1 },
-                    { x: 1, y: 1 },
-                    { x: 2, y: 1 }
-                ],
-                color: "L"
-            }
-        ];
-
-        const randomIndex = Math.floor(Math.random() * tetriminos.length);
-        const { blocks, color } = tetriminos[randomIndex];
+        const randomIndex = Math.floor(Math.random() * TETRIMINO_TEMPLATES.length);
+        const { blocks, color } = TETRIMINO_TEMPLATES[randomIndex];
 
         return new Tetrimino(blocks, color);
     }
