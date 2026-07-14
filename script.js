@@ -621,16 +621,18 @@ const keyMap = {
     ArrowRight: "moveRight",
     ArrowDown: "moveDown",
     ArrowUp: "rotate",
-    " ": "hardDrop",
-    Spacebar: "hardDrop",
     c: "hold",
     C: "hold",
     p: "togglePause",
     P: "togglePause"
 };
 
+const codeMap = {
+    Space: "hardDrop"
+};
+
 document.addEventListener("keydown", (event) => {
-    const action = keyMap[event.key];
+    const action = keyMap[event.key] || codeMap[event.code];
 
     if (!action) return;
 
