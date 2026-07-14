@@ -532,20 +532,22 @@ class Game {
 
         this.canHold = false;
 
-        const pieceToHold = this.currentTetrimino;
+        const currentPieceColor = this.currentTetrimino.color;
 
         if (this.holdTetrimino) {
-            this.currentTetrimino = this.holdTetrimino;
-            this.holdTetrimino = pieceToHold;
+            const heldPieceColor = this.holdTetrimino.color;
+
+            this.currentTetrimino = this.createTetriminoByColor(heldPieceColor);
+            this.holdTetrimino = this.createTetriminoByColor(currentPieceColor);
         } else {
-            this.holdTetrimino = pieceToHold;
+            this.holdTetrimino = this.createTetriminoByColor(currentPieceColor);
+
             this.currentTetrimino = this.nextTetrimino;
+            this.currentTetrimino.resetPosition();
+
             this.nextTetrimino = this.getNextTetrimino();
             this.drawNextTetrimino();
         }
-
-        this.currentTetrimino.resetPosition();
-        this.holdTetrimino.resetPosition();
 
         this.drawHoldTetrimino();
 
