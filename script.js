@@ -159,9 +159,9 @@ class Game {
             this.refillTetriminoBag();
         }
 
-        const { blocks, color } = this.tetriminoBag.pop();
+        const { color } = this.tetriminoBag.pop();
 
-        return new Tetrimino(blocks, color);
+        return this.createTetriminoByColor(color);
     }
 
     createTetriminoByColor(color) {
