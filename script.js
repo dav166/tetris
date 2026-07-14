@@ -146,6 +146,7 @@ class Game {
 
     draw() {
         this.drawBoard();
+        this.drawGhostTetrimino();
         this.drawCurrentTetrimino();
     }
 
@@ -162,6 +163,46 @@ class Game {
                 gameBoardElement.appendChild(cell);
             }
         }
+    }
+
+    getGhostY() {
+        let ghostY = this.currentTetrimino.y;
+
+        while (
+            !this.wouldCollideAt(
+                this.currentTetrimino,
+                this.currentTetrimino.x,
+                ghostY + 1
+            )
+        ) {
+            ghostY++;
+        }
+
+        return ghostY;
+    }
+
+    drawGhostTetrimino() {
+        if (!this.hasStarted || this.isGameOver || this.isClearing) return;
+
+        const ghostY = this.getGhostY();
+
+        if (ghostY === this.currentTetrimino.y) return;
+
+        const gameBoardElement = document.getElementById("game-board");
+
+        this.currentTetrimino.blocks.forEach((block) => {
+            const x = block.x + this.currentTetrimino.x;
+            const y = block.y + ghostY;
+
+            if (y >= 0 && x >= 0 && x < BOARD_WIDTH && y < BOARD_HEIGHT) {
+                const index = y * BOARD_WIDTH + x;
+                const cell = gameBoardElement.childNodes[index];
+
+                if (cell) {
+                    cell.className = `${this.currentTetrimino.color} ghost`;
+                }
+            }
+        });
     }
 
     drawCurrentTetrimino() {
