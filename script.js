@@ -720,6 +720,12 @@ const codeMap = {
     Space: "hardDrop"
 };
 
+const blurActiveButton = () => {
+    if (document.activeElement instanceof HTMLButtonElement) {
+        document.activeElement.blur();
+    }
+};
+
 document.addEventListener("keydown", (event) => {
     const action = keyMap[event.key] || codeMap[event.code];
 
@@ -730,33 +736,41 @@ document.addEventListener("keydown", (event) => {
 });
 
 document.getElementById("start-pause").addEventListener("click", () => {
+    blurActiveButton();
     game.togglePause();
 });
 
 document.getElementById("game-over-restart").addEventListener("click", () => {
+    blurActiveButton();
     game.restart();
 });
 
 document.getElementById("restart-button").addEventListener("click", () => {
+    blurActiveButton();
     game.restart();
 });
 
 document.getElementById("left-button").addEventListener("click", () => {
+    blurActiveButton();
     game.moveLeft();
 });
 
 document.getElementById("right-button").addEventListener("click", () => {
+    blurActiveButton();
     game.moveRight();
 });
 
 document.getElementById("down-button").addEventListener("click", () => {
+    blurActiveButton();
     game.moveDown();
 });
 
 document.getElementById("rotate-button").addEventListener("click", () => {
+    blurActiveButton();
     game.rotate();
 });
 
 document.getElementById("hard-drop-button").addEventListener("click", () => {
+    blurActiveButton();
     game.hardDrop();
 });
