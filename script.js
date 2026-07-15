@@ -735,6 +735,12 @@ document.addEventListener("keydown", (event) => {
     game[action]();
 });
 
+document.addEventListener("keyup", (event) => {
+    if (event.code === "Space") {
+        event.preventDefault();
+    }
+});
+
 document.getElementById("start-pause").addEventListener("click", () => {
     blurActiveButton();
     game.togglePause();
