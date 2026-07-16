@@ -538,11 +538,18 @@ class Game {
 
         this.currentTetrimino.x--;
 
-        if (this.checkCollision()) {
+        const movedSuccessfully = !this.checkCollision();
+
+        if (!movedSuccessfully) {
             this.currentTetrimino.x++;
         }
 
-        this.syncLockDelay();
+        if (movedSuccessfully) {
+            this.tryRefreshLockDelay();
+        } else {
+            this.syncLockDelay();
+        }
+
         this.draw();
     }
 
@@ -551,11 +558,18 @@ class Game {
 
         this.currentTetrimino.x++;
 
-        if (this.checkCollision()) {
+        const movedSuccessfully = !this.checkCollision();
+
+        if (!movedSuccessfully) {
             this.currentTetrimino.x--;
         }
 
-        this.syncLockDelay();
+        if (movedSuccessfully) {
+            this.tryRefreshLockDelay();
+        } else {
+            this.syncLockDelay();
+        }
+
         this.draw();
     }
 
