@@ -391,6 +391,7 @@ class Game {
     }
 
     async lockAndAdvance() {
+        this.clearLockDelay();
         this.isClearing = true;
 
         this.lockTetrimino();
@@ -490,6 +491,8 @@ class Game {
 
     async hardDrop() {
         if (!this.canUseControls()) return;
+
+        this.clearLockDelay();
 
         let droppedRows = 0;
 
