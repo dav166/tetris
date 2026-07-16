@@ -667,6 +667,8 @@ class Game {
             this.animationFrameId = null;
         }
 
+        this.clearLockDelay();
+
         document.getElementById("game-over").style.display = "none";
         document.getElementById("start-pause").textContent = "Start";
 
@@ -689,6 +691,8 @@ class Game {
             cancelAnimationFrame(this.animationFrameId);
             this.animationFrameId = null;
         }
+
+        this.clearLockDelay();
 
         this.updateScoreboard();
         this.updateGameOverStats();
