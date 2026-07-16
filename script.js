@@ -523,6 +523,7 @@ class Game {
             this.currentTetrimino.x++;
         }
 
+        this.syncLockDelay();
         this.draw();
     }
 
@@ -535,6 +536,7 @@ class Game {
             this.currentTetrimino.x--;
         }
 
+        this.syncLockDelay();
         this.draw();
     }
 
@@ -585,6 +587,7 @@ class Game {
             this.currentTetrimino.x = originalX;
         }
 
+        this.syncLockDelay();
         this.draw();
     }
 
@@ -617,6 +620,7 @@ class Game {
             return;
         }
 
+        this.syncLockDelay();
         this.draw();
     }
 
