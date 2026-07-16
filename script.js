@@ -324,6 +324,61 @@ class Game {
         );
     }
 
+    isTouchingGround() {
+        return this.wouldCollideAt (
+            this.currentTetrimino,
+            this.currentTetrimino.x,
+            this.currentTetrimino.y + 1
+        );
+    }
+
+    clearLockDelay() {
+        if (this.lockDelayTimerId) {
+            clearTimeout(this.lockDelayTimerId);
+            this.lockDelayTimerId = null;
+        }
+    }
+
+    startLockDelay() {
+        if (
+            this.lockDelayTimerId ||
+            this.isGameOver ||
+            this.isPaused ||
+            this.isClearing
+        ) {
+            return;
+        }
+
+        this.lockDelayTimerId = setTimeout(async () => {
+            this.lockDelayTimerId = null;
+
+            if (this.isGameOver || this.isPaused || this.isClearing) {
+                return;
+            }
+
+            if (this.isTouchingGround()) {
+                await this.lockAndAdvance();
+            }
+        }, LOCK_DELAY_TIME);
+    }
+
+    syncLockDelay() {
+        if (
+            !this.hasStarted ||
+            this.isGameOver ||
+            this.isPaused ||
+            this.isClearing
+        ) {
+            return;
+        }
+
+        if (this.isTouchingGround()) {
+            this.startLockDelay();
+        } else {
+            this.clearLockDelay();
+        }
+    }
+
     lockTetrimino() {
         this.currentTetrimino.blocks.forEach(block => {
             const x = block.x + this.currentTetrimino.x;
