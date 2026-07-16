@@ -480,10 +480,11 @@ class Game {
 
         if (this.checkCollision()) {
             this.currentTetrimino.y--;
-            await this.lockAndAdvance();
+            this.startLockDelay();
             return;
         }
-
+        
+        this.syncLockDelay();
         this.draw();
     }
 
