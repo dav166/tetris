@@ -419,6 +419,7 @@ class Game {
 
         this.currentTetrimino = this.nextTetrimino;
         this.currentTetrimino.resetPosition();
+        this.lockDelayResetCount = 0;
 
         this.nextTetrimino = this.getNextTetrimino();
         this.canHold = true;
@@ -676,6 +677,7 @@ class Game {
         this.dropCounter = 0;
         this.dropInterval = STARTING_DROP_INTERVAL;
         this.lastTime = 0;
+        this.lockDelayResetCount = 0;
 
         this.holdTetrimino = null;
         this.canHold = true;
