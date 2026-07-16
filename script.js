@@ -381,6 +381,22 @@ class Game {
         }
     }
 
+    tryRefreshLockDelay() {
+        if (!this.isTouchingGround()) {
+            this.clearLockDelay();
+            return;
+        }
+
+        if (this.lockDelayResetCount >= LOCK_DELAY_RESET_LIMIT) {
+            this.startLockDelay();
+            return;
+        }
+
+        this.lockDelayResetCount++;
+        this.clearLockDelay();
+        this.startLockDelay();
+    }
+
     lockTetrimino() {
         this.currentTetrimino.blocks.forEach(block => {
             const x = block.x + this.currentTetrimino.x;
