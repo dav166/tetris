@@ -8,6 +8,7 @@ const MIN_DROP_INTERVAL = 100;
 const LEVEL_SPEED_STEP = 75;
 const ROW_CLEAR_ANIMATION_TIME = 250;
 const LOCK_DELAY_TIME = 500;
+const LOCK_DELAY_RESET_LIMIT = 15;
 
 const createEmptyBoard = () => {
     return Array.from({ length: BOARD_HEIGHT }, () => Array(BOARD_WIDTH).fill(0));
@@ -138,6 +139,7 @@ class Game {
         this.lastTime = 0;
         this.animationFrameId = null;
         this.lockDelayTimerId = null;
+        this.lockDelayResetCount = 0;
 
         this.holdTetrimino = null;
         this.canHold = true;
