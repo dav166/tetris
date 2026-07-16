@@ -618,9 +618,11 @@ class Game {
         if (!foundValidPosition) {
             this.currentTetrimino.blocks = originalBlocks;
             this.currentTetrimino.x = originalX;
+            this.syncLockDelay();
+        } else {
+            this.tryRefreshLockDelay();
         }
 
-        this.syncLockDelay();
         this.draw();
     }
 
