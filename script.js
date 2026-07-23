@@ -9,6 +9,51 @@ const LEVEL_SPEED_STEP = 75;
 const ROW_CLEAR_ANIMATION_TIME = 250;
 const LOCK_DELAY_TIME = 500;
 const LOCK_DELAY_RESET_LIMIT = 15;
+const GAME_STATUS = Object.freeze({
+    READY: "ready",
+    PLAYING: "playing",
+    PAUSED: "paused",
+    GAME_OVER: "game-over"
+});
+
+const GAME_STATUS_CONTENT = Object.freeze({
+    [GAME_STATUS.READY]: {
+        eyebrow: "Game ready",
+        title: "Ready?",
+        message: "Press Start or P to begin.",
+        overlayAction: "Start Game",
+        controlText: "Start",
+        controlLabel: "Start game",
+        showOverlay: true
+    },
+    [GAME_STATUS.PLAYING]: {
+        eyebrow: "",
+        title: "",
+        message: "",
+        overlayAction: "",
+        controlText: "Pause",
+        controlLabel: "Pause game",
+        showOverlay: false
+    },
+    [GAME_STATUS.PAUSED]: {
+        eyebrow: "Game paused",
+        title: "Paused",
+        message: "Your board is safe. Resume when you are ready.",
+        overlayAction: "Resume Game",
+        controlText: "Resume",
+        controlLabel: "Resume game",
+        showOverlay: true
+    },
+    [GAME_STATUS.GAME_OVER]: {
+        eyebrow: "",
+        title: "",
+        message: "",
+        overlayAction: "",
+        controlText: "New Game",
+        controlLabel: "Start a new game",
+        showOverlay: false
+    }
+});
 
 const createEmptyBoard = () => {
     return Array.from({ length: BOARD_HEIGHT }, () => Array(BOARD_WIDTH).fill(0));
@@ -152,6 +197,7 @@ class Game {
         this.drawNextTetrimino();
         this.drawHoldTetrimino();
         this.updateScoreboard();
+        this.updateGameStatus();
     }
 
     refillTetriminoBag() {
@@ -182,6 +228,58 @@ class Game {
 
     canUseControls() {
         return this.hasStarted && !this.isPaused && !this.isGameOver && !this.isClearing;
+    }
+
+    getGameStatus() {
+        if (this.isGameOver) {
+            return GAME_STATUS.GAME_OVER;
+        }
+
+        if (!this.hasStarted) {
+            return GAME_STATUS.READY;
+        }
+
+        if (this.isPaused) {
+            return GAME_STATUS.PAUSED;
+        }
+
+        return GAME_STATUS.PLAYING;
+    }
+
+    updateGameStatus() {
+        const status = this.getGameStatus();
+        const content = GAME_STATUS_CONTENT[status];
+
+        const gameContainer = document.getElementById("game-container");
+        const statusOverlay = document.getElementById("game-status");
+        const statusEyebrow = document.getElementById("game-status-eyebrow");
+        const statusTitle = document.getElementById("game-status-title");
+        const statusMessage = document.getElementById("game-status-message");
+        const statusActionButton = document.getElementById("game-status-action");
+        const startPauseButton = document.getElementById("start-pause");
+
+        gameContainer.dataset.gameState = status;
+        statusOverlay.dataset.status = status;
+
+        statusEyebrow.textContent = content.eyebrow;
+        statusTitle.textContent = content.title;
+        statusMessage.textContent = content.message;
+        statusActionButton.textContent = content.overlayAction;
+
+        statusOverlay.classList.toggle("is-visible", content.showOverlay);
+        statusOverlay.setAttribute(
+            "aria-hidden",
+            String(!content.showOverlay)
+        );
+
+        statusActionButton.disabled = !content.showOverlay;
+        statusActionButton.tabIndex = content.showOverlay ? 0 : -1;
+
+        startPauseButton.textContent = content.controlText;
+        startPauseButton.setAttribute(
+            "aria-label",
+            content.controlLabel
+        );
     }
 
     draw() {
@@ -706,12 +804,12 @@ class Game {
         this.clearLockDelay();
 
         document.getElementById("game-over").style.display = "none";
-        document.getElementById("start-pause").textContent = "Start";
 
         this.draw();
         this.drawNextTetrimino();
         this.drawHoldTetrimino();
         this.updateScoreboard();
+        this.updateGameStatus();
     }
 
     restart() {
@@ -732,13 +830,16 @@ class Game {
 
         this.updateScoreboard();
         this.updateGameOverStats();
+        this.updateGameStatus();
 
-        document.getElementById("start-pause").textContent = "Start";
         document.getElementById("game-over").style.display = "flex";
+        document.getElementById("game-over-restart").focus();
     }
 
     start() {
-        if (this.hasStarted && !this.isPaused) return;
+        if (this.hasStarted && !this.isPaused) {
+            return;
+        }
 
         if (this.isGameOver) {
             this.resetGameState();
@@ -749,26 +850,29 @@ class Game {
         this.lastTime = 0;
         this.dropCounter = 0;
 
-        document.getElementById("start-pause").textContent = "Pause";
-
         this.draw();
         this.updateScoreboard();
+        this.updateGameStatus();
 
         if (!this.animationFrameId) {
-            this.animationFrameId = requestAnimationFrame((time) => this.gameLoop(time));
+            this.animationFrameId = requestAnimationFrame((time) => {
+                this.gameLoop(time);
+            });
         }
     }
 
     togglePause() {
+        if (this.isGameOver) {
+            this.restart();
+            return;
+        }
+
         if (!this.hasStarted) {
             this.start();
             return;
         }
 
-        if (this.isGameOver) return;
-
         this.isPaused = !this.isPaused;
-        document.getElementById("start-pause").textContent = this.isPaused ? "Resume" : "Pause";
 
         if (this.isPaused) {
             if (this.animationFrameId) {
@@ -776,13 +880,21 @@ class Game {
                 this.animationFrameId = null;
             }
 
+            this.clearLockDelay();
+            this.updateGameStatus();
             return;
         }
 
         this.lastTime = 0;
+        this.dropCounter = 0;
+
+        this.updateGameStatus();
+        this.syncLockDelay();
 
         if (!this.animationFrameId) {
-            this.animationFrameId = requestAnimationFrame((time) => this.gameLoop(time));
+            this.animationFrameId = requestAnimationFrame((time) => {
+                this.gameLoop(time);
+            });
         }
     }
 
@@ -792,19 +904,31 @@ class Game {
             return;
         }
 
+        if (this.lastTime === 0) {
+            this.lastTime = time;
+        }
+
         const deltaTime = time - this.lastTime;
+
         this.lastTime = time;
         this.dropCounter += deltaTime;
 
-        if (this.dropCounter > this.dropInterval) {
+        if (this.dropCounter >= this.dropInterval) {
             await this.softDrop();
             this.dropCounter = 0;
+        }
+
+        if (this.isGameOver || this.isPaused) {
+            this.animationFrameId = null;
+            return;
         }
 
         this.draw();
         this.updateScoreboard();
 
-        this.animationFrameId = requestAnimationFrame((nextTime) => this.gameLoop(nextTime));
+        this.animationFrameId = requestAnimationFrame((nextTime) => {
+            this.gameLoop(nextTime);
+        });
     }
 }
 
@@ -846,7 +970,7 @@ document.addEventListener("keyup", (event) => {
     }
 });
 
-document.getElementById("start-pause").addEventListener("click", () => {
+document.getElementById("game-status-action").addEventListener("click", () => {
     blurActiveButton();
     game.togglePause();
 });

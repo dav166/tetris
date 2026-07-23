@@ -25,7 +25,35 @@
         </div>
       </aside>
 
-      <main id="game-board" aria-label="Tetris game board"></main>
+      <div id="board-shell">
+        <main id="game-board" aria-label="Tetris game board"></main>
+
+        <section
+          id="game-status"
+          class="game-status is-visible"
+          aria-label="Game status"
+        >
+          <div class="game-status__card">
+            <div
+              class="game-status__copy"
+              aria-live="polite"
+              aria-atomic="true"
+            >
+              <p id="game-status-eyebrow">Game ready</p>
+              <h2 id="game-status-title">Ready?</h2>
+              <p id="game-status-message">Press Start or P to begin.</p>
+            </div>
+
+            <button
+              type="button"
+              id="game-status-action"
+              aria-controls="game-board"
+            >
+              Start Game
+            </button>
+          </div>
+        </section>
+      </div>
 
       <aside class="side-panel">
         <section class="preview-panel">
@@ -42,8 +70,20 @@
     </div>
 
     <div id="controls">
-      <button type="button" id="start-pause">Start</button>
-      <button type="button" id="restart-button">Restart</button>
+      <button
+        type="button"
+        id="start-pause"
+        aria-controls="game-board"
+        aria-keyshortcuts="P"
+      >
+        Start
+      </button>
+      <button 
+        type="button" 
+        id="restart-button"
+      >
+        Restart
+      </button>
     </div>
 
     <div id="touch-controls">
