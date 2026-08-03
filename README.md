@@ -24,8 +24,10 @@ The project began as a foundational JavaScript exercise and has grown into a mor
 * Increasing drop speed as levels advance
 * Persistent local high score using `localStorage`
 * Pause and restart controls
-* Keyboard and touch controls
-* Responsive desktop and mobile layouts
+* Deterministic keyboard movement and soft-drop repeat
+* Press-and-hold touch controls
+* Tap and swipe board gestures
+* Responsive portrait and landscape mobile layouts
 * Game-over summary with final statistics
 * No frameworks or external runtime dependencies
 
@@ -188,14 +190,11 @@ This project demonstrates practical experience with:
 ## Planned Improvements
 
 * Full Super Rotation System rotation states and kick tables
-* Improved keyboard repeat behavior
 * Soft-drop scoring
-* Pause-state overlay
 * Sound effects and volume controls
 * Additional visual themes
 * Accessibility announcements for game state changes
 * Automated tests for collision, scoring, and line clearing
-* Refactoring rendering to reuse board cells
 * Optional gameplay statistics and session history
 
 ## Development Approach
