@@ -47,6 +47,22 @@ body {
     align-items: start;
 }
 
+#play-area {
+    width: 240px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+}
+
+#input-panel {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+}
+
 .side-panel {
     width: 100%;
     min-height: 120px;
@@ -85,6 +101,10 @@ body {
     width: 240px;
     aspect-ratio: 1 / 2;
     border-radius: 10px;
+    touch-action: none;
+    user-select: none;
+    -webkit-user-select: none;
+    -webkit-tap-highlight-color: transparent;
 }
 
 #game-board {
