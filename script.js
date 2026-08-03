@@ -189,15 +189,39 @@ class Game {
         this.holdTetrimino = null;
         this.canHold = true;
 
+        this.gameBoardElement = document.getElementById("game-board");
+        this.boardCells = [];
+
         this.init();
     }
 
     init() {
+        this.createBoardCells();
         this.draw();
         this.drawNextTetrimino();
         this.drawHoldTetrimino();
         this.updateScoreboard();
         this.updateGameStatus();
+    }
+
+    createBoardCells() {
+        const cellCount = BOARD_WIDTH * BOARD_HEIGHT;
+        const fragment = document.createDocumentFragment();
+
+        this.gameBoardElement.replaceChildren();
+        this.boardCells = [];
+
+        for (let index = 0; index < cellCount; index++) {
+            const cell = document.createElement("div");
+
+            cell.className = "empty";
+            cell.setAttribute("aria-hidden", "true");
+
+            this.boardCells.push(cell);
+            fragment.appendChild(cell);
+        }
+
+        this.gameBoardElement.appendChild(fragment);
     }
 
     refillTetriminoBag() {
@@ -289,16 +313,13 @@ class Game {
     }
 
     drawBoard() {
-        const gameBoardElement = document.getElementById("game-board");
-        gameBoardElement.innerHTML = "";
-
         for (let y = 0; y < BOARD_HEIGHT; y++) {
             for (let x = 0; x < BOARD_WIDTH; x++) {
-                const cell = document.createElement("div");
+                const index = y * BOARD_WIDTH + x;
                 const cellValue = this.board[y][x];
+                const cell = this.boardCells[index];
 
                 cell.className = cellValue || "empty";
-                gameBoardElement.appendChild(cell);
             }
         }
     }
@@ -320,43 +341,59 @@ class Game {
     }
 
     drawGhostTetrimino() {
-        if (!this.hasStarted || this.isGameOver || this.isClearing) return;
+        if (!this.hasStarted || this.isGameOver || this.isClearing) {
+            return;
+        }
 
         const ghostY = this.getGhostY();
 
-        if (ghostY === this.currentTetrimino.y) return;
-
-        const gameBoardElement = document.getElementById("game-board");
+        if (ghostY === this.currentTetrimino.y) {
+            return;
+        }
 
         this.currentTetrimino.blocks.forEach((block) => {
             const x = block.x + this.currentTetrimino.x;
             const y = block.y + ghostY;
 
-            if (y >= 0 && x >= 0 && x < BOARD_WIDTH && y < BOARD_HEIGHT) {
-                const index = y * BOARD_WIDTH + x;
-                const cell = gameBoardElement.childNodes[index];
+            const isInsideBoard =
+                y >= 0 &&
+                y < BOARD_HEIGHT &&
+                x >= 0 &&
+                x < BOARD_WIDTH;
 
-                if (cell) {
-                    cell.className = `${this.currentTetrimino.color} ghost`;
-                }
+            if (!isInsideBoard) {
+                return;
+            }
+
+            const index = y * BOARD_WIDTH + x;
+            const cell = this.boardCells[index];
+
+            if (cell) {
+                cell.className = `${this.currentTetrimino.color} ghost`;
             }
         });
     }
 
     drawCurrentTetrimino() {
-        const gameBoardElement = document.getElementById("game-board");
-
         this.currentTetrimino.blocks.forEach((block) => {
             const x = block.x + this.currentTetrimino.x;
             const y = block.y + this.currentTetrimino.y;
 
-            if (y >= 0 && x >= 0 && x < BOARD_WIDTH && y < BOARD_HEIGHT) {
-                const index = y * BOARD_WIDTH + x;
-                const cell = gameBoardElement.childNodes[index];
+            const isInsideBoard =
+                y >= 0 &&
+                y < BOARD_HEIGHT &&
+                x >= 0 &&
+                x < BOARD_WIDTH;
 
-                if (cell) {
-                    cell.className = this.currentTetrimino.color;
-                }
+            if (!isInsideBoard) {
+                return;
+            }
+
+            const index = y * BOARD_WIDTH + x;
+            const cell = this.boardCells[index];
+
+            if (cell) {
+                cell.className = this.currentTetrimino.color;
             }
         });
     }
