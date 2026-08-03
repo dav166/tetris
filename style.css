@@ -227,16 +227,53 @@ button:active {
     transform: translateY(1px);
 }
 
-#controls,
-#touch-controls {
+#controls {
+    width: 100%;
     display: flex;
     justify-content: center;
-    flex-wrap: wrap;
+    gap: 8px;
+}
+
+#controls button {
+    flex: 1;
+    max-width: 112px;
+    margin: 0;
+}
+
+#touch-controls {
+    width: 100%;
+    display: none;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 8px;
 }
 
 #touch-controls button {
-    min-width: 80px;
-    font-size: 16px;
+    min-width: 0;
+    min-height: 48px;
+    margin: 0;
+    padding: 10px 6px;
+    font-size: 14px;
+    font-weight: 700;
+    line-height: 1.1;
+    touch-action: none;
+    user-select: none;
+    -webkit-user-select: none;
+    -webkit-tap-highlight-color: transparent;
+}
+
+#touch-controls button.is-pressed {
+    background: #6262c4;
+    border-color: #fff;
+    transform: translateY(1px) scale(0.98);
+}
+
+#gesture-hint {
+    display: none;
+    margin: 0;
+    color: #b8b8dd;
+    font-size: 12px;
+    line-height: 1.4;
+    text-align: center;
 }
 
 .empty {
@@ -303,29 +340,140 @@ button:active {
 
 @media only screen and (max-width: 760px) {
     body {
+        min-height: 100svh;
         align-items: flex-start;
     }
 
     #game-container {
-        padding: 16px;
+        width: 100%;
+        padding:
+            10px
+            max(12px, env(safe-area-inset-right))
+            max(24px, env(safe-area-inset-bottom))
+            max(12px, env(safe-area-inset-left));
+        gap: 10px;
     }
 
     #game-header h1 {
-        font-size: 36px;
+        font-size: 32px;
+    }
+
+    #subtitle {
+        margin-top: 2px;
+        font-size: 12px;
     }
 
     #game-layout {
         width: 100%;
         grid-template-columns: 1fr;
         justify-items: center;
+        gap: 16px;
     }
 
-    .side-panel {
-        width: min(100%, 320px);
+    #play-area {
+        width: 100%;
+        order: -1;
+        gap: 8px;
     }
 
     #board-shell {
-        width: min(90vw, 300px);
-        order: -1;
+        width:
+            max(
+                150px,
+                min(
+                    92vw,
+                    280px,
+                    calc((100svh - 260px) / 2)
+                )
+            );
+    }
+
+    #input-panel {
+        width: min(94vw, 360px);
+        gap: 7px;
+    }
+
+    #controls button {
+        padding: 8px 14px;
+    }
+
+    #touch-controls {
+        display: grid;
+    }
+
+    #gesture-hint {
+        display: block;
+    }
+
+    .side-panel {
+        width: min(100%, 360px);
+    }
+
+    #keyboard-hint {
+        display: none;
+    }
+}
+
+@media
+    only screen
+    and (max-width: 900px)
+    and (max-height: 500px)
+    and (orientation: landscape) {
+
+    body {
+        min-height: 100svh;
+        align-items: center;
+    }
+
+    #game-container {
+        width: 100%;
+        max-width: none;
+        padding:
+            max(8px, env(safe-area-inset-top))
+            max(10px, env(safe-area-inset-right))
+            max(8px, env(safe-area-inset-bottom))
+            max(10px, env(safe-area-inset-left));
+        gap: 0;
+    }
+
+    #game-header,
+    #keyboard-hint,
+    .side-panel {
+        display: none;
+    }
+
+    #game-layout {
+        display: block;
+        width: auto;
+    }
+
+    #play-area {
+        width: auto;
+        flex-direction: row;
+        justify-content: center;
+        align-items: center;
+        gap: 12px;
+    }
+
+    #board-shell {
+        width:
+            min(
+                46vw,
+                240px,
+                calc((100svh - 16px) / 2)
+            );
+    }
+
+    #input-panel {
+        width: min(46vw, 260px);
+    }
+
+    #touch-controls {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    #gesture-hint {
+        display: block;
     }
 }

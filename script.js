@@ -971,78 +971,596 @@ class Game {
 
 const game = new Game();
 
-const keyMap = {
-    ArrowLeft: "moveLeft",
-    ArrowRight: "moveRight",
-    ArrowDown: "moveDown",
+const REPEAT_INPUTS = Object.freeze({
+    ArrowLeft: {
+        action: "moveLeft",
+        delay: 150,
+        interval: 45,
+        axis: "horizontal"
+    },
+    ArrowRight: {
+        action: "moveRight",
+        delay: 150,
+        interval: 45,
+        axis: "horizontal"
+    },
+    ArrowDown: {
+        action: "moveDown",
+        delay: 70,
+        interval: 35,
+        axis: "vertical"
+    }
+});
+
+const SINGLE_INPUTS = Object.freeze({
     ArrowUp: "rotate",
-    c: "hold",
-    C: "hold",
-    p: "togglePause",
-    P: "togglePause"
+    KeyC: "hold",
+    KeyP: "togglePause",
+    Space: "hardDrop"
+});
+
+const activeRepeats = new Map();
+const heldKeys = new Set();
+
+let activeHorizontalKey = null;
+
+const invokeGameAction = (action) => {
+    const method = game[action];
+
+    if (typeof method !== "function") {
+        throw new Error(`Unknown game action: ${action}`);
+    }
+
+    return method.call(game);
 };
 
-const codeMap = {
-    Space: "hardDrop"
+const stopRepeat = (repeatId) => {
+    const state = activeRepeats.get(repeatId);
+
+    if (!state) {
+        return;
+    }
+
+    clearTimeout(state.timeoutId);
+    clearInterval(state.intervalId);
+
+    activeRepeats.delete(repeatId);
 };
+
+const startRepeat = (
+    repeatId,
+    action,
+    delay,
+    interval
+) => {
+    stopRepeat(repeatId);
+    invokeGameAction(action);
+
+    const state = {
+        timeoutId: null,
+        intervalId: null
+    };
+
+    state.timeoutId = setTimeout(() => {
+        state.intervalId = setInterval(() => {
+            invokeGameAction(action);
+        }, interval);
+    }, delay);
+
+    activeRepeats.set(repeatId, state);
+};
+
+const stopAllRepeats = () => {
+    [...activeRepeats.keys()].forEach((repeatId) => {
+        stopRepeat(repeatId);
+    });
+};
+
+const isRecognizedKey = (code) => {
+    return Boolean(
+        REPEAT_INPUTS[code] ||
+        SINGLE_INPUTS[code]
+    );
+};
+
+const startKeyboardRepeat = (code) => {
+    const config = REPEAT_INPUTS[code];
+
+    if (config.axis === "horizontal") {
+        if (
+            activeHorizontalKey &&
+            activeHorizontalKey !== code
+        ) {
+            stopRepeat(
+                `keyboard:${activeHorizontalKey}`
+            );
+        }
+
+        activeHorizontalKey = code;
+    }
+
+    startRepeat(
+        `keyboard:${code}`,
+        config.action,
+        config.delay,
+        config.interval
+    );
+};
+
+const resumeHeldHorizontalKey = () => {
+    const fallbackKey = [
+        "ArrowLeft",
+        "ArrowRight"
+    ].find((code) => {
+        return heldKeys.has(code);
+    });
+
+    if (fallbackKey) {
+        startKeyboardRepeat(fallbackKey);
+    }
+};
+
+const resetKeyboardInput = () => {
+    stopAllRepeats();
+    heldKeys.clear();
+    activeHorizontalKey = null;
+};
+
+document.addEventListener("keydown", (event) => {
+    const { code } = event;
+
+    if (!isRecognizedKey(code)) {
+        return;
+    }
+
+    event.preventDefault();
+
+    if (heldKeys.has(code)) {
+        return;
+    }
+
+    heldKeys.add(code);
+
+    if (REPEAT_INPUTS[code]) {
+        startKeyboardRepeat(code);
+        return;
+    }
+
+    const action = SINGLE_INPUTS[code];
+
+    if (action === "togglePause") {
+        stopAllRepeats();
+        activeHorizontalKey = null;
+    }
+
+    invokeGameAction(action);
+});
+
+document.addEventListener("keyup", (event) => {
+    const { code } = event;
+
+    if (!isRecognizedKey(code)) {
+        return;
+    }
+
+    event.preventDefault();
+
+    heldKeys.delete(code);
+    stopRepeat(`keyboard:${code}`);
+
+    if (activeHorizontalKey === code) {
+        activeHorizontalKey = null;
+        resumeHeldHorizontalKey();
+    }
+});
+
+window.addEventListener(
+    "blur",
+    resetKeyboardInput
+);
+
+document.addEventListener(
+    "visibilitychange",
+    () => {
+        if (document.hidden) {
+            resetKeyboardInput();
+        }
+    }
+);
 
 const blurActiveButton = () => {
-    if (document.activeElement instanceof HTMLButtonElement) {
+    if (
+        document.activeElement instanceof
+        HTMLButtonElement
+    ) {
         document.activeElement.blur();
     }
 };
 
-document.addEventListener("keydown", (event) => {
-    const action = keyMap[event.key] || codeMap[event.code];
+const prepareForGameStateChange = () => {
+    stopAllRepeats();
+    activeHorizontalKey = null;
+};
 
-    if (!action) return;
+const bindActionButton = (
+    elementId,
+    action
+) => {
+    const button = document.getElementById(elementId);
 
-    event.preventDefault();
-    game[action]();
-});
+    button.addEventListener("click", () => {
+        blurActiveButton();
 
-document.addEventListener("keyup", (event) => {
-    if (event.code === "Space") {
-        event.preventDefault();
+        if (
+            action === "togglePause" ||
+            action === "restart"
+        ) {
+            prepareForGameStateChange();
+        }
+
+        invokeGameAction(action);
+    });
+};
+
+const bindRepeatingButton = (
+    elementId,
+    action,
+    delay,
+    interval
+) => {
+    const button = document.getElementById(elementId);
+    const repeatId = `button:${elementId}`;
+
+    let activePointerId = null;
+
+    const stop = () => {
+        stopRepeat(repeatId);
+
+        activePointerId = null;
+        button.classList.remove("is-pressed");
+    };
+
+    button.addEventListener(
+        "pointerdown",
+        (event) => {
+            if (activePointerId !== null) {
+                return;
+            }
+
+            event.preventDefault();
+            blurActiveButton();
+
+            activePointerId = event.pointerId;
+
+            button.setPointerCapture(
+                event.pointerId
+            );
+
+            button.classList.add("is-pressed");
+
+            startRepeat(
+                repeatId,
+                action,
+                delay,
+                interval
+            );
+        }
+    );
+
+    button.addEventListener(
+        "pointerup",
+        stop
+    );
+
+    button.addEventListener(
+        "pointercancel",
+        stop
+    );
+
+    button.addEventListener(
+        "lostpointercapture",
+        stop
+    );
+
+    button.addEventListener(
+        "click",
+        (event) => {
+            /*
+             * Keyboard-generated clicks normally use
+             * detail === 0. Pointer clicks are already
+             * handled by pointerdown.
+             */
+            if (event.detail === 0) {
+                invokeGameAction(action);
+            }
+        }
+    );
+};
+
+bindActionButton(
+    "game-status-action",
+    "togglePause"
+);
+
+bindActionButton(
+    "start-pause",
+    "togglePause"
+);
+
+bindActionButton(
+    "restart-button",
+    "restart"
+);
+
+bindActionButton(
+    "game-over-restart",
+    "restart"
+);
+
+bindActionButton(
+    "rotate-button",
+    "rotate"
+);
+
+bindActionButton(
+    "hard-drop-button",
+    "hardDrop"
+);
+
+bindActionButton(
+    "hold-button",
+    "hold"
+);
+
+bindRepeatingButton(
+    "left-button",
+    "moveLeft",
+    150,
+    45
+);
+
+bindRepeatingButton(
+    "right-button",
+    "moveRight",
+    150,
+    45
+);
+
+bindRepeatingButton(
+    "down-button",
+    "moveDown",
+    70,
+    35
+);
+
+const SWIPE_STEP_DISTANCE = 24;
+const SWIPE_RELEASE_DISTANCE = 12;
+const HARD_DROP_SWIPE_DISTANCE = 48;
+const TAP_DISTANCE_TOLERANCE = 10;
+
+const boardShell =
+    document.getElementById("board-shell");
+
+let boardGesture = null;
+
+const invokeRepeatedly = (
+    action,
+    count
+) => {
+    for (
+        let step = 0;
+        step < count;
+        step++
+    ) {
+        invokeGameAction(action);
     }
-});
+};
 
-document.getElementById("game-status-action").addEventListener("click", () => {
-    blurActiveButton();
-    game.togglePause();
-});
+const clearBoardGesture = () => {
+    if (
+        boardGesture &&
+        boardShell.hasPointerCapture(
+            boardGesture.pointerId
+        )
+    ) {
+        boardShell.releasePointerCapture(
+            boardGesture.pointerId
+        );
+    }
 
-document.getElementById("game-over-restart").addEventListener("click", () => {
-    blurActiveButton();
-    game.restart();
-});
+    boardGesture = null;
+};
 
-document.getElementById("restart-button").addEventListener("click", () => {
-    blurActiveButton();
-    game.restart();
-});
+boardShell.addEventListener(
+    "pointerdown",
+    (event) => {
+        if (
+            event.pointerType === "mouse" ||
+            event.target.closest("button") ||
+            !game.canUseControls()
+        ) {
+            return;
+        }
 
-document.getElementById("left-button").addEventListener("click", () => {
-    blurActiveButton();
-    game.moveLeft();
-});
+        event.preventDefault();
 
-document.getElementById("right-button").addEventListener("click", () => {
-    blurActiveButton();
-    game.moveRight();
-});
+        boardShell.setPointerCapture(
+            event.pointerId
+        );
 
-document.getElementById("down-button").addEventListener("click", () => {
-    blurActiveButton();
-    game.moveDown();
-});
+        boardGesture = {
+            pointerId: event.pointerId,
+            startX: event.clientX,
+            startY: event.clientY,
+            lastX: event.clientX,
+            lastY: event.clientY,
+            movedPiece: false
+        };
+    }
+);
 
-document.getElementById("rotate-button").addEventListener("click", () => {
-    blurActiveButton();
-    game.rotate();
-});
+boardShell.addEventListener(
+    "pointermove",
+    (event) => {
+        if (
+            !boardGesture ||
+            boardGesture.pointerId !==
+                event.pointerId
+        ) {
+            return;
+        }
 
-document.getElementById("hard-drop-button").addEventListener("click", () => {
-    blurActiveButton();
-    game.hardDrop();
-});
+        event.preventDefault();
+
+        const deltaX =
+            event.clientX - boardGesture.lastX;
+
+        const deltaY =
+            event.clientY - boardGesture.lastY;
+
+        const absoluteX = Math.abs(deltaX);
+        const absoluteY = Math.abs(deltaY);
+
+        const isHorizontalGesture =
+            absoluteX >= SWIPE_STEP_DISTANCE &&
+            absoluteX > absoluteY;
+
+        if (isHorizontalGesture) {
+            const stepCount = Math.floor(
+                absoluteX / SWIPE_STEP_DISTANCE
+            );
+
+            const action =
+                deltaX < 0
+                    ? "moveLeft"
+                    : "moveRight";
+
+            invokeRepeatedly(
+                action,
+                stepCount
+            );
+
+            boardGesture.lastX +=
+                Math.sign(deltaX) *
+                stepCount *
+                SWIPE_STEP_DISTANCE;
+
+            boardGesture.lastY = event.clientY;
+            boardGesture.movedPiece = true;
+
+            return;
+        }
+
+        const isDownwardGesture =
+            deltaY >= SWIPE_STEP_DISTANCE &&
+            absoluteY > absoluteX;
+
+        if (isDownwardGesture) {
+            const stepCount = Math.floor(
+                deltaY / SWIPE_STEP_DISTANCE
+            );
+
+            invokeRepeatedly(
+                "moveDown",
+                stepCount
+            );
+
+            boardGesture.lastY +=
+                stepCount *
+                SWIPE_STEP_DISTANCE;
+
+            boardGesture.lastX = event.clientX;
+            boardGesture.movedPiece = true;
+        }
+    }
+);
+
+boardShell.addEventListener(
+    "pointerup",
+    (event) => {
+        if (
+            !boardGesture ||
+            boardGesture.pointerId !==
+                event.pointerId
+        ) {
+            return;
+        }
+
+        const totalX =
+            event.clientX - boardGesture.startX;
+
+        const totalY =
+            event.clientY - boardGesture.startY;
+
+        const absoluteX = Math.abs(totalX);
+        const absoluteY = Math.abs(totalY);
+
+        const totalDistance = Math.hypot(
+            totalX,
+            totalY
+        );
+
+        const movedPiece =
+            boardGesture.movedPiece;
+
+        clearBoardGesture();
+
+        if (movedPiece) {
+            return;
+        }
+
+        const isHardDropGesture =
+            totalY <=
+                -HARD_DROP_SWIPE_DISTANCE &&
+            absoluteY > absoluteX;
+
+        if (isHardDropGesture) {
+            invokeGameAction("hardDrop");
+            return;
+        }
+
+        const isHorizontalRelease =
+            absoluteX >=
+                SWIPE_RELEASE_DISTANCE &&
+            absoluteX > absoluteY;
+
+        if (isHorizontalRelease) {
+            invokeGameAction(
+                totalX < 0
+                    ? "moveLeft"
+                    : "moveRight"
+            );
+
+            return;
+        }
+
+        const isDownwardRelease =
+            totalY >=
+                SWIPE_RELEASE_DISTANCE &&
+            absoluteY > absoluteX;
+
+        if (isDownwardRelease) {
+            invokeGameAction("moveDown");
+            return;
+        }
+
+        if (
+            totalDistance <=
+            TAP_DISTANCE_TOLERANCE
+        ) {
+            invokeGameAction("rotate");
+        }
+    }
+);
+
+boardShell.addEventListener(
+    "pointercancel",
+    clearBoardGesture
+);
+
+boardShell.addEventListener(
+    "lostpointercapture",
+    () => {
+        boardGesture = null;
+    }
+);

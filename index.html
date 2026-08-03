@@ -2,7 +2,10 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0, viewport-fit=cover"
+  >
   <link rel="stylesheet" href="style.css">
   <title>Tetris</title>
 </head>
@@ -18,41 +21,131 @@
         <h2>Stats</h2>
 
         <div id="score-panel">
-          <div id="score">Score: <span id="score-value">0</span></div>
-          <div id="lines">Lines: <span id="lines-value">0</span></div>
-          <div id="level">Level: <span id="level-value">1</span></div>
-          <div id="high-score">High Score: <span id="high-score-value">0</span></div>
+          <div id="score">
+            Score: <span id="score-value">0</span>
+          </div>
+
+          <div id="lines">
+            Lines: <span id="lines-value">0</span>
+          </div>
+
+          <div id="level">
+            Level: <span id="level-value">1</span>
+          </div>
+
+          <div id="high-score">
+            High Score: <span id="high-score-value">0</span>
+          </div>
         </div>
       </aside>
 
-      <div id="board-shell">
-        <main id="game-board" aria-label="Tetris game board"></main>
+      <div id="play-area">
+        <div id="board-shell">
+          <main
+            id="game-board"
+            aria-label="Tetris game board"
+            aria-describedby="gesture-hint"
+          ></main>
 
-        <section
-          id="game-status"
-          class="game-status is-visible"
-          aria-label="Game status"
-        >
-          <div class="game-status__card">
-            <div
-              class="game-status__copy"
-              aria-live="polite"
-              aria-atomic="true"
-            >
-              <p id="game-status-eyebrow">Game ready</p>
-              <h2 id="game-status-title">Ready?</h2>
-              <p id="game-status-message">Press Start or P to begin.</p>
+          <section
+            id="game-status"
+            class="game-status is-visible"
+            aria-label="Game status"
+          >
+            <div class="game-status__card">
+              <div
+                class="game-status__copy"
+                aria-live="polite"
+                aria-atomic="true"
+              >
+                <p id="game-status-eyebrow">Game ready</p>
+                <h2 id="game-status-title">Ready?</h2>
+                <p id="game-status-message">
+                  Press Start or P to begin.
+                </p>
+              </div>
+
+              <button
+                type="button"
+                id="game-status-action"
+                aria-controls="game-board"
+              >
+                Start Game
+              </button>
             </div>
+          </section>
+        </div>
+
+        <div id="input-panel">
+          <div id="controls" aria-label="Game controls">
+            <button
+              type="button"
+              id="start-pause"
+              aria-controls="game-board"
+              aria-keyshortcuts="P"
+            >
+              Start
+            </button>
+
+            <button type="button" id="restart-button">
+              Restart
+            </button>
+          </div>
+
+          <div id="touch-controls" aria-label="Touch controls">
+            <button
+              type="button"
+              id="left-button"
+              aria-label="Move left"
+            >
+              ← Left
+            </button>
 
             <button
               type="button"
-              id="game-status-action"
-              aria-controls="game-board"
+              id="rotate-button"
+              aria-label="Rotate clockwise"
             >
-              Start Game
+              ↻ Rotate
+            </button>
+
+            <button
+              type="button"
+              id="right-button"
+              aria-label="Move right"
+            >
+              Right →
+            </button>
+
+            <button
+              type="button"
+              id="down-button"
+              aria-label="Soft drop"
+            >
+              ↓ Down
+            </button>
+
+            <button
+              type="button"
+              id="hard-drop-button"
+              aria-label="Hard drop"
+            >
+              ⇊ Drop
+            </button>
+
+            <button
+              type="button"
+              id="hold-button"
+              aria-label="Hold piece"
+            >
+              Hold
             </button>
           </div>
-        </section>
+
+          <p id="gesture-hint">
+            Tap to rotate · Drag to move · Swipe up to drop
+          </p>
+        </div>
       </div>
 
       <aside class="side-panel">
@@ -68,6 +161,11 @@
         </section>
       </aside>
     </div>
+
+    <p id="keyboard-hint">
+      Move: Arrow Keys · Rotate: Up · Soft Drop: Down ·
+      Hard Drop: Space · Hold: C · Pause: P
+    </p>
 
     <div id="controls">
       <button
