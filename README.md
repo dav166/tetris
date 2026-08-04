@@ -2,7 +2,14 @@
 
 A polished, responsive falling-block puzzle game built from scratch with vanilla JavaScript, HTML, and CSS.
 
-The project began as a foundational JavaScript exercise and has grown into a more complete browser game featuring modern Tetris-inspired mechanics, persistent scoring, responsive controls, animation, and structured object-oriented game logic.
+## Highlights
+
+* Built without frameworks or runtime dependencies
+* Uses seven-bag randomization and lock-delay mechanics
+* Supports keyboard, touch controls, taps, and swipe gestures
+* Persists high scores using `localStorage`
+* Includes responsive portrait and landscape layouts
+
 
 <p align="center">
   <a href="https://dav166.github.io/tetris/"><strong>Play the live game</strong></a>
@@ -12,7 +19,7 @@ The project began as a foundational JavaScript exercise and has grown into a mor
   <img
     src="./assets/tetris-gameplay.gif"
     alt="Tetris game showing the board, score panel, next piece, and hold piece"
-    width="850"
+    width="500"
   >
 </p>
 
@@ -198,9 +205,6 @@ This project demonstrates practical experience with:
 ## Planned Improvements
 
 * Full Super Rotation System rotation states and kick tables
-* Soft-drop scoring
-* Sound effects and volume controls
-* Additional visual themes
 * Accessibility announcements for game state changes
 * Automated tests for collision, scoring, and line clearing
 * Optional gameplay statistics and session history
