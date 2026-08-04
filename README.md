@@ -8,6 +8,14 @@ The project began as a foundational JavaScript exercise and has grown into a mor
   <a href="https://dav166.github.io/tetris/"><strong>Play the live game</strong></a>
 </p>
 
+<p align="center">
+  <img
+    src="./assets/tetris-gameplay.mp4"
+    alt="Tetris game showing the board, score panel, next piece, and hold piece"
+    width="850"
+  >
+</p>
+
 ## Features
 
 * Responsive 10 × 20 game board
