@@ -10,7 +10,7 @@ The project began as a foundational JavaScript exercise and has grown into a mor
 
 <p align="center">
   <img
-    src="./assets/tetris-gameplay.mp4"
+    src="./assets/tetris-gameplay.gif"
     alt="Tetris game showing the board, score panel, next piece, and hold piece"
     width="850"
   >
